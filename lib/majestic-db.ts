@@ -30,26 +30,19 @@ export function isSupabaseConfigured() {
   return Boolean(baseUrl && serviceKey);
 }
 
-function headers(prefer?: string) {
-  return {
-    apikey: serviceKey,
-    Authorization: `Bearer ${serviceKey}`,
-    "Content-Type": "application/json",
-    ...(prefer ? { Prefer: prefer } : {}),
-  };
-}
-
 async function request(path: string, init?: RequestInit) {
   if (!isSupabaseConfigured()) {
     throw new Error("Supabase is not configured");
   }
 
+  const requestHeaders = new Headers(init?.headers);
+  requestHeaders.set("apikey", serviceKey);
+  requestHeaders.set("Authorization", `Bearer ${serviceKey}`);
+  requestHeaders.set("Content-Type", "application/json");
+
   const response = await fetch(`${baseUrl}/rest/v1/${path}`, {
     ...init,
-    headers: {
-      ...headers(),
-      ...(init?.headers ?? {}),
-    },
+    headers: requestHeaders,
     cache: "no-store",
   });
 
@@ -135,10 +128,13 @@ export function normalizeProductionInput(body: ProductionInput) {
   const thumbnailUrl = safeHttpUrl(String(body.thumbnail_url ?? "")) ?? youtubeThumbnailUrl(youtubeId);
   const backdropUrl = safeHttpUrl(String(body.backdrop_url ?? "")) ?? thumbnailUrl;
   const status = body.status === "published" ? "published" : "draft";
+  const slug = slugify(String(body.slug ?? "") || title);
+
+  if (!slug) throw new Error("Nie udało się utworzyć poprawnego adresu produkcji.");
 
   return {
     title,
-    slug: slugify(String(body.slug ?? "") || title),
+    slug,
     description: String(body.description ?? "").trim(),
     genre: String(body.genre ?? "Film").trim() || "Film",
     year,
@@ -162,7 +158,7 @@ export async function adminCreateProduction(body: ProductionInput): Promise<Prod
   const record = normalizeProductionInput(body);
   const rows = (await request("majestic_productions", {
     method: "POST",
-    headers: headers("return=representation"),
+    headers: { Prefer: "return=representation" },
     body: JSON.stringify(record),
   })) as Production[];
   return rows[0];
@@ -172,7 +168,7 @@ export async function adminUpdateProduction(id: string, body: ProductionInput): 
   const record = normalizeProductionInput(body);
   const rows = (await request(`majestic_productions?id=eq.${encodeURIComponent(id)}`, {
     method: "PATCH",
-    headers: headers("return=representation"),
+    headers: { Prefer: "return=representation" },
     body: JSON.stringify(record),
   })) as Production[];
   return rows[0];
@@ -181,6 +177,6 @@ export async function adminUpdateProduction(id: string, body: ProductionInput): 
 export async function adminDeleteProduction(id: string) {
   await request(`majestic_productions?id=eq.${encodeURIComponent(id)}`, {
     method: "DELETE",
-    headers: headers("return=minimal"),
+    headers: { Prefer: "return=minimal" },
   });
 }
