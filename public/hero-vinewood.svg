@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 800" role="img" aria-label="Nighttime Vinewood skyline with a classic car">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#07101c"/>
+      <stop offset="0.58" stop-color="#111923"/>
+      <stop offset="1" stop-color="#05080d"/>
+    </linearGradient>
+    <linearGradient id="road" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#111820"/>
+      <stop offset="1" stop-color="#030507"/>
+    </linearGradient>
+    <linearGradient id="car" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#18202a"/>
+      <stop offset="0.42" stop-color="#090c11"/>
+      <stop offset="1" stop-color="#020305"/>
+    </linearGradient>
+    <linearGradient id="window" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0f1b29"/>
+      <stop offset="1" stop-color="#020507"/>
+    </linearGradient>
+    <radialGradient id="cityGlow">
+      <stop offset="0" stop-color="#dca75c" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#dca75c" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur20"><feGaussianBlur stdDeviation="20"/></filter>
+    <filter id="blur8"><feGaussianBlur stdDeviation="8"/></filter>
+    <filter id="redGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="12" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="800" fill="url(#sky)"/>
+  <ellipse cx="1110" cy="270" rx="420" ry="240" fill="url(#cityGlow)" filter="url(#blur20)"/>
+
+  <path d="M0 335 C170 235 300 274 430 231 C615 168 714 244 860 196 C1060 130 1230 185 1600 115 L1600 430 L0 430Z" fill="#0a0e13"/>
+  <path d="M590 185 C760 123 927 132 1120 170 C1245 195 1355 177 1600 107 L1600 292 C1370 262 1160 243 1001 256 C847 269 705 252 590 285Z" fill="#0e131a"/>
+
+  <text x="930" y="175" fill="#dfe3df" opacity=".88" font-family="Arial, sans-serif" font-size="45" font-weight="700" letter-spacing="8">VINEWOOD</text>
+
+  <g opacity=".95">
+    <rect x="210" y="246" width="72" height="188" fill="#111820"/>
+    <rect x="295" y="212" width="86" height="222" fill="#0c131b"/>
+    <rect x="398" y="180" width="55" height="254" fill="#101924"/>
+    <rect x="466" y="265" width="103" height="169" fill="#0d141c"/>
+    <rect x="595" y="222" width="66" height="212" fill="#111923"/>
+    <rect x="680" y="144" width="69" height="290" fill="#0d1620"/>
+    <rect x="758" y="232" width="80" height="202" fill="#10171f"/>
+    <rect x="1250" y="214" width="94" height="220" fill="#0d141b"/>
+    <rect x="1364" y="250" width="81" height="184" fill="#111820"/>
+  </g>
+
+  <g fill="#e5b568" opacity=".72">
+    <g transform="translate(224 265)"><rect width="7" height="5"/><rect x="22" width="7" height="5"/><rect x="44" width="7" height="5"/><rect y="25" width="7" height="5"/><rect x="22" y="25" width="7" height="5"/><rect x="44" y="25" width="7" height="5"/><rect y="58" width="7" height="5"/><rect x="44" y="58" width="7" height="5"/></g>
+    <g transform="translate(310 230)"><rect width="8" height="6"/><rect x="28" width="8" height="6"/><rect x="56" width="8" height="6"/><rect y="36" width="8" height="6"/><rect x="28" y="36" width="8" height="6"/><rect x="56" y="36" width="8" height="6"/><rect y="86" width="8" height="6"/><rect x="56" y="86" width="8" height="6"/></g>
+    <g transform="translate(410 200)"><rect width="7" height="5"/><rect x="24" width="7" height="5"/><rect y="42" width="7" height="5"/><rect x="24" y="42" width="7" height="5"/><rect y="101" width="7" height="5"/><rect x="24" y="101" width="7" height="5"/></g>
+    <g transform="translate(610 240)"><rect width="7" height="5"/><rect x="26" width="7" height="5"/><rect y="37" width="7" height="5"/><rect x="26" y="37" width="7" height="5"/><rect y="82" width="7" height="5"/></g>
+    <g transform="translate(694 165)"><rect width="7" height="5"/><rect x="27" width="7" height="5"/><rect y="34" width="7" height="5"/><rect x="27" y="34" width="7" height="5"/><rect y="77" width="7" height="5"/><rect x="27" y="77" width="7" height="5"/><rect y="133" width="7" height="5"/></g>
+    <g transform="translate(1267 235)"><rect width="8" height="6"/><rect x="31" width="8" height="6"/><rect x="62" width="8" height="6"/><rect y="42" width="8" height="6"/><rect x="31" y="42" width="8" height="6"/><rect y="92" width="8" height="6"/></g>
+  </g>
+
+  <g fill="#05080a">
+    <path d="M150 439 L168 266 L181 439Z"/>
+    <path d="M165 286 C109 245 97 231 93 205 C133 218 157 238 170 259 C176 226 194 198 227 177 C222 214 207 242 183 267 C215 243 246 234 275 238 C250 257 218 272 183 279 C214 281 244 294 265 318 C230 311 203 299 179 282 C186 318 183 346 172 372Z"/>
+    <path d="M520 442 L534 304 L548 442Z"/>
+    <path d="M536 319 C493 288 481 269 479 246 C507 253 530 269 539 291 C543 262 558 240 583 225 C580 253 566 277 545 297 C572 282 594 279 618 284 C600 302 575 311 549 307 C575 314 594 327 609 347 C580 344 559 333 542 316Z"/>
+  </g>
+
+  <path d="M0 426 C320 404 555 429 790 456 C1027 483 1265 456 1600 425 L1600 800 L0 800Z" fill="url(#road)"/>
+  <path d="M170 800 C408 586 632 501 870 470" stroke="#26313b" stroke-width="2" opacity=".85"/>
+  <path d="M527 800 C687 625 826 535 1020 473" stroke="#7b673e" stroke-width="4" stroke-dasharray="34 58" opacity=".42"/>
+  <path d="M985 800 C1073 624 1190 518 1315 467" stroke="#26313b" stroke-width="2" opacity=".8"/>
+
+  <g transform="translate(740 334)">
+    <ellipse cx="438" cy="384" rx="410" ry="64" fill="#000" opacity=".64" filter="url(#blur8)"/>
+    <path d="M90 210 C132 126 239 90 426 93 C612 96 733 135 789 209 L850 249 L864 365 C833 397 795 411 730 414 L130 414 C68 408 37 390 15 358 L27 272Z" fill="url(#car)" stroke="#28313a" stroke-width="3"/>
+    <path d="M185 201 C236 124 299 109 428 111 C551 113 638 130 693 202Z" fill="url(#window)" stroke="#25313d" stroke-width="3"/>
+    <path d="M208 197 L276 125 L424 119 L419 199Z" fill="#08111b" opacity=".88"/>
+    <path d="M435 119 L581 132 L667 201 L438 198Z" fill="#071018" opacity=".9"/>
+    <path d="M116 247 C309 218 585 220 801 248" fill="none" stroke="#242a31" stroke-width="4" opacity=".85"/>
+    <rect x="150" y="274" width="150" height="35" rx="8" fill="#25090a" stroke="#502122"/>
+    <rect x="166" y="281" width="55" height="21" rx="4" fill="#ff4a28" filter="url(#redGlow)"/>
+    <rect x="228" y="281" width="55" height="21" rx="4" fill="#ff4a28" filter="url(#redGlow)"/>
+    <rect x="646" y="274" width="150" height="35" rx="8" fill="#25090a" stroke="#502122"/>
+    <rect x="661" y="281" width="55" height="21" rx="4" fill="#ff4a28" filter="url(#redGlow)"/>
+    <rect x="724" y="281" width="55" height="21" rx="4" fill="#ff4a28" filter="url(#redGlow)"/>
+    <rect x="420" y="286" width="96" height="61" rx="5" fill="#d5c5a7" stroke="#6c614e" stroke-width="3"/>
+    <text x="468" y="306" text-anchor="middle" fill="#2c2b28" font-family="Arial" font-size="10">SAN ANDREAS</text>
+    <text x="468" y="337" text-anchor="middle" fill="#171715" font-family="Arial Black, Arial" font-size="27">RM-001</text>
+    <ellipse cx="175" cy="404" rx="60" ry="59" fill="#020304" stroke="#14191f" stroke-width="10"/>
+    <ellipse cx="704" cy="404" rx="60" ry="59" fill="#020304" stroke="#14191f" stroke-width="10"/>
+    <path d="M76 359 C305 379 600 377 817 355" fill="none" stroke="#20252b" stroke-width="5"/>
+  </g>
+
+  <rect width="1600" height="800" fill="url(#fade)" opacity="0"/>
+</svg>
