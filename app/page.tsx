@@ -1,76 +1,109 @@
 import Link from "next/link";
 import { rows, titles } from "@/lib/catalog";
+import styles from "./home.module.css";
 
 export default function Home() {
   const featured = titles.find((item) => item.slug === "vinewood-nights")!;
 
   return (
-    <main>
-      <header className="topbar">
-        <Link className="brand" href="/" aria-label="Majestic+ home">
-          <span className="brand-main">MAJESTIC</span><span className="brand-plus">+</span>
+    <main className={styles.page}>
+      <header className={styles.topbar}>
+        <Link className={styles.brand} href="/" aria-label="Majestic+ home">
+          <span className={styles.brandMain}>MAJESTIC</span>
+          <span className={styles.brandPlus}>+</span>
         </Link>
-        <nav className="navlinks" aria-label="Główna nawigacja">
-          <Link className="active" href="/">Strona główna</Link>
+
+        <nav className={styles.nav} aria-label="Główna nawigacja">
+          <Link className={styles.active} href="/">Strona główna</Link>
           <a href="#filmy">Filmy</a>
           <a href="#seriale">Seriale</a>
           <a href="#originals">Originals</a>
+          <a href="#moja-lista">Moja lista</a>
         </nav>
-        <div className="nav-actions">
-          <Link className="icon-button" href="/search" aria-label="Szukaj">⌕</Link>
-          <button className="profile" aria-label="Profil">RM</button>
+
+        <div className={styles.actions}>
+          <Link className={styles.search} href="/search" aria-label="Szukaj">
+            <span className={styles.searchIcon}>⌕</span>
+            <span>Szukaj</span>
+          </Link>
+          <button className={styles.profile} aria-label="Profil">RM</button>
         </div>
       </header>
 
-      <section className="hero">
-        <div className="hero-noise" />
-        <div className="hero-city" />
-        <div className="hero-shadow" />
-        <div className="hero-content">
-          <div className="eyebrow">A MAJESTIC+ ORIGINAL</div>
-          <h1>VINEWOOD<br /><span>NIGHTS</span></h1>
-          <div className="hero-meta">
-            <span className="match">{featured.match} match</span>
+      <section className={styles.hero}>
+        <div className={styles.heroArtwork} />
+        <div className={styles.heroShade} />
+        <div className={styles.heroGrain} />
+
+        <button className={`${styles.arrow} ${styles.arrowLeft}`} aria-label="Poprzednia produkcja">‹</button>
+        <button className={`${styles.arrow} ${styles.arrowRight}`} aria-label="Następna produkcja">›</button>
+
+        <div className={styles.heroContent}>
+          <div className={styles.original}>MAJESTIC+ ORIGINAL</div>
+          <h1 className={styles.heroTitle}>
+            <span>VINEWOOD</span>
+            <span>NIGHTS</span>
+          </h1>
+
+          <div className={styles.meta}>
+            <span className={styles.match}>{featured.match} match</span>
             <span>{featured.year}</span>
-            <span className="rating">{featured.maturity}</span>
+            <span className={styles.maturity}>{featured.maturity}</span>
             <span>{featured.runtime}</span>
             <span>{featured.quality}</span>
           </div>
-          <p>{featured.description}</p>
-          <div className="hero-buttons">
-            <Link className="primary-btn" href={`/title/${featured.slug}`}><span>▶</span> Oglądaj</Link>
-            <button className="secondary-btn"><span>＋</span> Moja lista</button>
+
+          <p className={styles.description}>{featured.description}</p>
+
+          <div className={styles.heroButtons}>
+            <Link className={styles.primary} href={`/watch/${featured.slug}`}>
+              <span>▶</span>
+              Oglądaj
+            </Link>
+            <button className={styles.secondary}>
+              <span>＋</span>
+              Moja lista
+            </button>
           </div>
         </div>
-        <div className="hero-credit">RICHARDS MAJESTIC STUDIOS</div>
+
+        <div className={styles.pager} aria-hidden="true">
+          <span className={styles.pagerActive} />
+          <span />
+          <span />
+          <span />
+        </div>
       </section>
 
-      <section className="catalog" id="filmy">
-        <div className="spotlight-bar">
-          <span className="spotlight-kicker">MAJESTIC PREMIERE</span>
-          <strong>Nowe historie. Prosto z Vinewood.</strong>
-          <span className="spotlight-copy">Ekskluzywne premiery Richards Majestic dostępne tylko tutaj.</span>
-        </div>
-
+      <section className={styles.catalog} id="filmy">
         {rows.map((row, rowIndex) => (
-          <section className="content-row" key={row.title} id={rowIndex === 1 ? "originals" : undefined}>
-            <div className="row-heading">
+          <section
+            className={styles.row}
+            key={row.title}
+            id={rowIndex === 1 ? "originals" : rowIndex === 2 ? "seriale" : undefined}
+          >
+            <div className={styles.rowHeader}>
               <h2>{row.title}</h2>
-              <button>Zobacz wszystko <span>›</span></button>
+              <Link href="/search">Zobacz wszystko ›</Link>
             </div>
-            <div className="card-track">
-              {row.slugs.map((slug, index) => {
+
+            <div className={styles.track}>
+              {row.slugs.map((slug) => {
                 const item = titles.find((entry) => entry.slug === slug)!;
+
                 return (
-                  <Link className={`movie-card ${item.posterClass}`} href={`/title/${item.slug}`} key={item.slug}>
-                    <div className="card-art">
-                      <div className="studio-mark">RM</div>
-                      {item.original && <div className="original-badge">M+</div>}
-                      <div className="card-index">{String(index + 1).padStart(2, "0")}</div>
-                      <div className="card-copy">
-                        <h3>{item.title}</h3>
-                        <span>{item.meta}</span>
-                      </div>
+                  <Link
+                    className={styles.card}
+                    href={`/title/${item.slug}`}
+                    key={item.slug}
+                    aria-label={`${item.title}, ${item.meta}`}
+                  >
+                    <div className={styles.cardBackdrop} />
+                    <span className={styles.cardBrand}>RM</span>
+                    {item.original && <span className={styles.originalBadge}>M+</span>}
+                    <div className={styles.cardCopy}>
+                      <h3>{item.title}</h3>
+                      <span>{item.meta}</span>
                     </div>
                   </Link>
                 );
@@ -80,25 +113,8 @@ export default function Home() {
         ))}
       </section>
 
-      <section className="feature-strip" id="seriale">
-        <div>
-          <span>RICHARDS MAJESTIC PRESENTS</span>
-          <h2>The city is watching.</h2>
-          <p>Największe premiery Los Santos, produkcje oryginalne i archiwum Vinewood w jednym miejscu.</p>
-        </div>
-        <a className="outline-btn" href="#filmy">Przeglądaj katalog</a>
-      </section>
-
-      <footer>
-        <div className="footer-brand"><span>MAJESTIC</span><b>+</b></div>
-        <p>Streaming by Richards Majestic Studios.</p>
-        <div className="footer-links">
-          <a href="#">Pomoc</a>
-          <a href="#">Warunki</a>
-          <a href="#">Prywatność</a>
-          <a href="#">Kontakt</a>
-        </div>
-        <small>© 2026 Richards Majestic Studios. All rights reserved.</small>
+      <footer className={styles.footer} id="moja-lista">
+        <strong>MAJESTIC+</strong> · Streaming by Richards Majestic Studios · © 2026
       </footer>
     </main>
   );
