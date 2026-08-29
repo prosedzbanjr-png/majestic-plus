@@ -10,7 +10,7 @@ export type Production = {
   maturity: string;
   runtime: string;
   quality: string;
-  cast: string[];
+  cast_members: string[];
   director: string;
   original: boolean;
   featured: boolean;
@@ -123,7 +123,7 @@ export function normalizeProductionInput(body: ProductionInput) {
   if (!youtubeId) throw new Error("Podaj poprawny link YouTube.");
 
   const rawCast = Array.isArray(body.cast) ? body.cast : String(body.cast ?? "").split(",");
-  const cast = rawCast.map((item) => String(item).trim()).filter(Boolean).slice(0, 40);
+  const castMembers = rawCast.map((item) => String(item).trim()).filter(Boolean).slice(0, 40);
   const year = Math.max(1900, Math.min(2100, Number(body.year) || new Date().getFullYear()));
   const thumbnailUrl = safeHttpUrl(String(body.thumbnail_url ?? "")) ?? youtubeThumbnailUrl(youtubeId);
   const backdropUrl = safeHttpUrl(String(body.backdrop_url ?? "")) ?? thumbnailUrl;
@@ -141,7 +141,7 @@ export function normalizeProductionInput(body: ProductionInput) {
     maturity: String(body.maturity ?? "16+").trim() || "16+",
     runtime: String(body.runtime ?? "").trim() || "—",
     quality: String(body.quality ?? "4K").trim() || "4K",
-    cast,
+    cast_members: castMembers,
     director: String(body.director ?? "Richards Majestic Studios").trim() || "Richards Majestic Studios",
     original: Boolean(body.original),
     featured: Boolean(body.featured),
