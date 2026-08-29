@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { adminListProductions, isSupabaseConfigured } from "@/lib/majestic-db";
+import { adminListProductions, isSupabaseConfigured, type Production } from "@/lib/majestic-db";
 import { isStudioAuthenticated, isStudioPasswordConfigured } from "@/lib/studio-auth";
 import LoginForm from "./LoginForm";
 import StudioPanel from "./StudioPanel";
@@ -37,7 +37,7 @@ export default async function StudioPage() {
     return <LoginForm />;
   }
 
-  let productions = [];
+  let productions: Production[] = [];
   try {
     productions = await adminListProductions();
   } catch {
