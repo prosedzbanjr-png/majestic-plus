@@ -97,6 +97,7 @@ export default function Home() {
                     href={`/title/${item.slug}`}
                     key={item.slug}
                     aria-label={`${item.title}, ${item.meta}`}
+                    data-slug={item.slug}
                   >
                     <div className={styles.cardBackdrop} />
                     <span className={styles.cardBrand}>RM</span>
