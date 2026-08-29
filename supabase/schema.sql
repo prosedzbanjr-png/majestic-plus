@@ -10,7 +10,7 @@ create table if not exists public.majestic_productions (
   maturity text not null default '16+',
   runtime text not null default '—',
   quality text not null default '4K',
-  cast jsonb not null default '[]'::jsonb,
+  cast_members jsonb not null default '[]'::jsonb,
   director text not null default 'Richards Majestic Studios',
   original boolean not null default false,
   featured boolean not null default false,
