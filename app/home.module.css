@@ -14,7 +14,7 @@
   align-items: center;
   gap: 40px;
   padding: 0 3.7vw;
-  background: linear-gradient(180deg, rgba(2,4,7,.98), rgba(2,4,7,.74) 68%, transparent);
+  background: linear-gradient(180deg, rgba(2, 4, 7, .98), rgba(2, 4, 7, .75) 68%, transparent);
   backdrop-filter: blur(10px);
 }
 
@@ -41,7 +41,7 @@
 
 .nav a {
   position: relative;
-  color: rgba(255,255,255,.74);
+  color: rgba(255, 255, 255, .74);
   transition: color .16s ease;
 }
 
@@ -68,7 +68,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: rgba(255,255,255,.92);
+  color: rgba(255, 255, 255, .92);
   font-size: 13px;
   font-weight: 700;
 }
@@ -84,21 +84,33 @@
   height: 40px;
   border: 0;
   border-radius: 9px;
-  background: linear-gradient(145deg,#e1be70,#a67b32);
+  background: linear-gradient(145deg, #e1be70, #a67b32);
   color: #13100a;
   font-weight: 900;
   cursor: pointer;
-  box-shadow: inset 0 1px rgba(255,255,255,.28);
+  box-shadow: inset 0 1px rgba(255, 255, 255, .28);
 }
 
 .hero {
   position: relative;
-  min-height: 570px;
+  min-height: 560px;
   display: flex;
   align-items: center;
   overflow: hidden;
-  padding: 100px 5.1vw 92px;
+  padding: 98px 5vw 86px;
   isolation: isolate;
+  background: #081019;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: auto 18% 12% 42%;
+  height: 230px;
+  z-index: -1;
+  background: radial-gradient(ellipse at center, rgba(221, 158, 75, .16), transparent 68%);
+  filter: blur(20px);
+  pointer-events: none;
 }
 
 .heroArtwork {
@@ -107,8 +119,9 @@
   z-index: -4;
   background-image: url('/hero-vinewood.svg');
   background-size: cover;
-  background-position: 50% center;
-  transform: scale(1.008);
+  background-position: 51% 49%;
+  filter: brightness(1.22) saturate(1.12) contrast(1.02);
+  transform: scale(1.006);
 }
 
 .heroShade {
@@ -116,8 +129,8 @@
   inset: 0;
   z-index: -3;
   background:
-    linear-gradient(90deg, rgba(2,4,7,.96) 0%, rgba(2,4,7,.88) 23%, rgba(2,4,7,.48) 39%, rgba(2,4,7,.08) 63%, rgba(2,4,7,.12) 100%),
-    linear-gradient(180deg, rgba(2,4,7,.04) 0%, rgba(2,4,7,.01) 59%, rgba(2,4,7,.88) 100%);
+    linear-gradient(90deg, rgba(2, 4, 7, .97) 0%, rgba(2, 4, 7, .91) 21%, rgba(2, 4, 7, .54) 38%, rgba(2, 4, 7, .10) 59%, rgba(2, 4, 7, .06) 82%, rgba(2, 4, 7, .16) 100%),
+    linear-gradient(180deg, rgba(2, 4, 7, .03) 0%, rgba(2, 4, 7, 0) 57%, rgba(2, 4, 7, .88) 100%);
 }
 
 .heroGrain {
@@ -125,17 +138,17 @@
   inset: 0;
   z-index: -2;
   pointer-events: none;
-  opacity: .11;
+  opacity: .12;
   background-image:
-    repeating-linear-gradient(0deg, rgba(255,255,255,.024) 0 1px, transparent 1px 3px),
-    repeating-linear-gradient(90deg, rgba(255,255,255,.01) 0 1px, transparent 1px 4px);
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, .022) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .01) 0 1px, transparent 1px 4px);
   mix-blend-mode: soft-light;
 }
 
 .heroContent {
   position: relative;
   z-index: 2;
-  width: min(450px, 39vw);
+  width: min(440px, 38vw);
 }
 
 .original {
@@ -151,12 +164,12 @@
   display: flex;
   flex-direction: column;
   font-family: Arial Black, Inter, ui-sans-serif, system-ui, sans-serif;
-  font-size: clamp(54px, 5.05vw, 82px);
+  font-size: clamp(52px, 4.75vw, 78px);
   line-height: .88;
   letter-spacing: -.06em;
   text-transform: uppercase;
   color: #ece7dd;
-  text-shadow: 0 8px 34px rgba(0,0,0,.38);
+  text-shadow: 0 8px 34px rgba(0, 0, 0, .38);
 }
 
 .heroTitle span:last-child { letter-spacing: -.052em; }
@@ -166,8 +179,8 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
-  margin-top: 19px;
-  color: rgba(255,255,255,.87);
+  margin-top: 18px;
+  color: rgba(255, 255, 255, .87);
   font-size: 12px;
   font-weight: 700;
 }
@@ -175,15 +188,15 @@
 .match { color: #6dde82; }
 
 .maturity {
-  border: 1px solid rgba(255,255,255,.5);
+  border: 1px solid rgba(255, 255, 255, .5);
   border-radius: 3px;
   padding: 2px 6px;
 }
 
 .description {
-  max-width: 445px;
+  max-width: 440px;
   margin: 16px 0 0;
-  color: rgba(255,255,255,.78);
+  color: rgba(255, 255, 255, .79);
   font-size: 14px;
   line-height: 1.62;
 }
@@ -212,13 +225,13 @@
 }
 
 .primary {
-  background: linear-gradient(135deg,#edcd83,#c49439);
+  background: linear-gradient(135deg, #edcd83, #c49439);
   color: #0d0a06;
-  box-shadow: 0 10px 28px rgba(160,116,35,.18);
+  box-shadow: 0 10px 28px rgba(160, 116, 35, .18);
 }
 
 .secondary {
-  background: rgba(255,255,255,.12);
+  background: rgba(255, 255, 255, .12);
   color: #fff;
   backdrop-filter: blur(8px);
 }
@@ -237,7 +250,7 @@
   height: 64px;
   border: 0;
   background: transparent;
-  color: rgba(255,255,255,.72);
+  color: rgba(255, 255, 255, .72);
   font-size: 50px;
   line-height: 1;
   cursor: pointer;
@@ -250,7 +263,7 @@
   position: absolute;
   z-index: 5;
   left: 50%;
-  bottom: 31px;
+  bottom: 30px;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
@@ -261,7 +274,7 @@
   width: 7px;
   height: 7px;
   border-radius: 999px;
-  background: rgba(255,255,255,.43);
+  background: rgba(255, 255, 255, .43);
 }
 
 .pager .pagerActive {
@@ -272,11 +285,11 @@
 .catalog {
   position: relative;
   z-index: 8;
-  margin-top: -54px;
+  margin-top: -48px;
   padding: 0 2.8vw 52px;
 }
 
-.row { margin-bottom: 25px; }
+.row { margin-bottom: 26px; }
 
 .rowHeader {
   display: flex;
@@ -317,10 +330,10 @@
   position: relative;
   display: block;
   min-width: 190px;
-  aspect-ratio: 16/9;
+  aspect-ratio: 16 / 9;
   overflow: hidden;
   border-radius: 7px;
-  border: 1px solid rgba(255,255,255,.065);
+  border: 1px solid rgba(255, 255, 255, .065);
   background: #0d1218;
   isolation: isolate;
   transform-origin: center;
@@ -329,9 +342,9 @@
 
 .card:hover {
   z-index: 4;
-  transform: scale(1.035) translateY(-3px);
-  border-color: rgba(220,174,81,.48);
-  box-shadow: 0 18px 44px rgba(0,0,0,.5);
+  transform: scale(1.038) translateY(-3px);
+  border-color: rgba(220, 174, 81, .5);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, .5);
 }
 
 .cardBackdrop {
@@ -339,6 +352,7 @@
   inset: 0;
   z-index: -3;
   overflow: hidden;
+  background: #10151b;
 }
 
 .cardBackdrop::before,
@@ -348,80 +362,184 @@
   inset: 0;
 }
 
-.card:nth-child(1) .cardBackdrop::before {
+.cardBackdrop::after {
+  background: linear-gradient(180deg, rgba(0, 0, 0, .02) 8%, rgba(0, 0, 0, .08) 48%, rgba(0, 0, 0, .9) 100%);
+}
+
+/* Popularne teraz */
+.card[data-slug="vinewood-nights"] .cardBackdrop::before {
   background:
-    linear-gradient(90deg, transparent 0 18%, rgba(7,12,18,.85) 18% 25%, transparent 25% 31%, rgba(8,13,19,.78) 31% 38%, transparent 38%),
-    repeating-linear-gradient(90deg, transparent 0 23px, rgba(235,180,93,.14) 24px 26px),
-    linear-gradient(180deg,#182433 0 57%,#080c11 58% 100%);
+    radial-gradient(ellipse at 48% 76%, #020304 0 7%, transparent 8%),
+    radial-gradient(circle at 76% 23%, rgba(217, 173, 99, .65) 0 1.6%, transparent 2.2%),
+    repeating-linear-gradient(90deg, transparent 0 24px, rgba(230, 180, 98, .11) 25px 27px),
+    linear-gradient(180deg, #182536 0 54%, #0a0f15 55% 100%);
 }
 
-.card:nth-child(1) .cardBackdrop::after {
+.card[data-slug="vinewood-nights"] .cardBackdrop::after {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
   background:
-    radial-gradient(ellipse at 54% 62%, rgba(0,0,0,.72) 0 8%, transparent 9%),
-    linear-gradient(180deg, transparent 20%, rgba(0,0,0,.12) 55%, rgba(0,0,0,.9) 100%);
+    radial-gradient(circle at 54% 54%, #151a20 0 4%, transparent 4.5%),
+    linear-gradient(90deg, transparent 0 48%, #11161c 48% 56%, transparent 56%),
+    linear-gradient(180deg, transparent 0 47%, rgba(0, 0, 0, .18) 48%, rgba(0, 0, 0, .9) 100%);
 }
 
-.card:nth-child(2) .cardBackdrop::before {
+.card[data-slug="pacific-standard"] .cardBackdrop::before {
   background:
-    radial-gradient(circle at 73% 46%, transparent 0 14%, #5a4524 15% 17%, transparent 18% 22%, #87652d 23% 25%, transparent 26%),
-    radial-gradient(circle at 73% 46%, rgba(222,177,86,.24), transparent 36%),
-    linear-gradient(120deg,#18120c 0%,#392918 47%,#0c0a09 100%);
+    radial-gradient(circle at 72% 46%, transparent 0 12%, #503b20 12.5% 14.5%, transparent 15% 20%, #85632e 20.5% 23%, transparent 23.5%),
+    radial-gradient(circle at 72% 46%, rgba(226, 180, 88, .26), transparent 36%),
+    linear-gradient(120deg, #17110c 0%, #382817 48%, #0c0a09 100%);
 }
 
-.card:nth-child(2) .cardBackdrop::after {
-  background: linear-gradient(180deg, transparent 20%, rgba(0,0,0,.1) 48%, rgba(0,0,0,.88) 100%);
-}
-
-.card:nth-child(3) .cardBackdrop::before {
+.card[data-slug="pacific-standard"] .cardBackdrop::after {
   background:
-    radial-gradient(circle at 72% 36%, #b8daf2 0 5%, rgba(148,194,230,.42) 6% 13%, transparent 15%),
-    linear-gradient(105deg, transparent 0 57%, rgba(124,173,211,.18) 58% 68%, transparent 69%),
-    linear-gradient(125deg,#09121d 0%,#1b3146 54%,#080d13 100%);
+    radial-gradient(ellipse at 30% 77%, #050505 0 8%, transparent 8.5%),
+    radial-gradient(ellipse at 42% 76%, #070707 0 7%, transparent 7.5%),
+    linear-gradient(180deg, transparent 0 47%, rgba(0, 0, 0, .12) 48%, rgba(0, 0, 0, .9) 100%);
 }
 
-.card:nth-child(3) .cardBackdrop::after {
-  background: linear-gradient(180deg, transparent 20%, rgba(0,0,0,.08) 50%, rgba(0,0,0,.9) 100%);
-}
-
-.card:nth-child(4) .cardBackdrop::before {
+.card[data-slug="the-last-take"] .cardBackdrop::before {
   background:
-    radial-gradient(circle at 72% 54%, rgba(255,184,83,.95) 0 5%, rgba(234,85,25,.5) 7% 14%, transparent 21%),
-    radial-gradient(circle at 62% 62%, rgba(255,97,24,.42), transparent 27%),
-    linear-gradient(125deg,#20100a 0%,#753014 52%,#140b08 100%);
+    radial-gradient(circle at 76% 32%, #d6edff 0 4%, rgba(151, 196, 230, .45) 5% 11%, transparent 13%),
+    linear-gradient(110deg, transparent 0 55%, rgba(128, 178, 216, .18) 56% 70%, transparent 71%),
+    linear-gradient(125deg, #08111b 0%, #1d344a 53%, #080d13 100%);
 }
 
-.card:nth-child(4) .cardBackdrop::after {
-  background: linear-gradient(180deg, transparent 14%, rgba(0,0,0,.06) 48%, rgba(0,0,0,.88) 100%);
-}
-
-.card:nth-child(5) .cardBackdrop::before {
+.card[data-slug="the-last-take"] .cardBackdrop::after {
   background:
-    radial-gradient(ellipse at 74% 42%, rgba(208,105,235,.42) 0 9%, transparent 23%),
-    linear-gradient(90deg, transparent 0 63%, rgba(93,32,137,.45) 64% 68%, transparent 69%),
-    linear-gradient(135deg,#13091c 0%,#3d1558 54%,#0b0910 100%);
+    radial-gradient(ellipse at 37% 75%, #05070a 0 8%, transparent 8.5%),
+    linear-gradient(180deg, transparent 15%, rgba(0, 0, 0, .06) 50%, rgba(0, 0, 0, .9) 100%);
 }
 
-.card:nth-child(5) .cardBackdrop::after {
-  background: linear-gradient(180deg, transparent 16%, rgba(0,0,0,.08) 48%, rgba(0,0,0,.88) 100%);
-}
-
-.card:nth-child(6) .cardBackdrop::before {
+.card[data-slug="san-andreas"] .cardBackdrop::before {
   background:
-    radial-gradient(circle at 75% 28%, rgba(255,190,126,.72) 0 5%, transparent 7%),
-    linear-gradient(90deg, transparent 0 64%, rgba(6,17,14,.8) 65% 67%, transparent 68%),
-    linear-gradient(180deg,#6f3543 0%,#ce6d55 45%,#17352b 46%,#08120e 100%);
+    radial-gradient(circle at 74% 54%, #ffc269 0 4%, rgba(242, 112, 36, .7) 5% 13%, rgba(123, 36, 13, .35) 14% 23%, transparent 30%),
+    radial-gradient(circle at 59% 67%, rgba(255, 94, 22, .42), transparent 27%),
+    linear-gradient(125deg, #221109 0%, #743014 53%, #130b08 100%);
 }
 
-.card:nth-child(6) .cardBackdrop::after {
-  background: linear-gradient(180deg, transparent 22%, rgba(0,0,0,.08) 48%, rgba(0,0,0,.86) 100%);
+.card[data-slug="san-andreas"] .cardBackdrop::after {
+  background:
+    linear-gradient(25deg, transparent 0 52%, rgba(6, 7, 8, .88) 53% 56%, transparent 57%),
+    linear-gradient(180deg, transparent 10%, rgba(0, 0, 0, .04) 52%, rgba(0, 0, 0, .88) 100%);
 }
 
-.row:nth-child(2) .cardBackdrop::before {
-  filter: hue-rotate(320deg) saturate(.9) brightness(.72);
+.card[data-slug="after-hours"] .cardBackdrop::before {
+  background:
+    radial-gradient(ellipse at 72% 43%, rgba(220, 101, 238, .48) 0 9%, transparent 24%),
+    linear-gradient(90deg, transparent 0 63%, rgba(93, 32, 137, .52) 64% 68%, transparent 69%),
+    linear-gradient(135deg, #13091c 0%, #3e1559 54%, #0b0910 100%);
 }
 
-.row:nth-child(3) .cardBackdrop::before {
-  filter: saturate(.62) sepia(.15) brightness(.68);
+.card[data-slug="after-hours"] .cardBackdrop::after {
+  background:
+    radial-gradient(ellipse at 77% 62%, rgba(5, 3, 7, .72) 0 9%, transparent 9.5%),
+    linear-gradient(180deg, transparent 14%, rgba(0, 0, 0, .08) 48%, rgba(0, 0, 0, .88) 100%);
+}
+
+.card[data-slug="mirror-park"] .cardBackdrop::before {
+  background:
+    radial-gradient(circle at 75% 27%, rgba(255, 199, 133, .8) 0 5%, transparent 6.5%),
+    radial-gradient(circle at 32% 62%, transparent 0 13%, rgba(26, 33, 27, .7) 13.5% 14.5%, transparent 15%),
+    linear-gradient(180deg, #663440 0%, #c66b59 44%, #1f4b3a 45%, #08120e 100%);
+}
+
+.card[data-slug="mirror-park"] .cardBackdrop::after {
+  background:
+    linear-gradient(90deg, transparent 0 63%, rgba(5, 17, 14, .88) 64% 66%, transparent 67%),
+    linear-gradient(180deg, transparent 18%, rgba(0, 0, 0, .06) 50%, rgba(0, 0, 0, .86) 100%);
+}
+
+/* Majestic+ Originals */
+.card[data-slug="red-carpet"] .cardBackdrop::before {
+  background:
+    radial-gradient(ellipse at 75% 34%, rgba(255, 210, 139, .3), transparent 26%),
+    linear-gradient(77deg, rgba(133, 15, 25, .9) 0 16%, transparent 16% 22%, rgba(104, 8, 18, .8) 22% 34%, transparent 34%),
+    linear-gradient(135deg, #25090e, #65131e 54%, #12070a);
+}
+
+.card[data-slug="southbound"] .cardBackdrop::before {
+  background:
+    radial-gradient(circle at 72% 63%, #ff4632 0 2.5%, rgba(210, 37, 30, .36) 3% 8%, transparent 12%),
+    radial-gradient(circle at 84% 63%, #ff4632 0 2.5%, rgba(210, 37, 30, .36) 3% 8%, transparent 12%),
+    linear-gradient(170deg, transparent 0 43%, rgba(228, 177, 89, .16) 44% 46%, transparent 47%),
+    linear-gradient(135deg, #091015 0%, #16222c 55%, #080b0e 100%);
+}
+
+.card[data-slug="studio-4"] .cardBackdrop::before {
+  background:
+    radial-gradient(circle at 74% 30%, #d9f3ff 0 4%, rgba(150, 209, 235, .35) 5% 12%, transparent 13%),
+    linear-gradient(108deg, transparent 0 55%, rgba(131, 197, 224, .16) 56% 70%, transparent 71%),
+    linear-gradient(135deg, #0b1516 0%, #173b3a 54%, #071010 100%);
+}
+
+.card[data-slug="studio-4"] .cardBackdrop::after {
+  background:
+    linear-gradient(90deg, transparent 0 28%, rgba(2, 5, 6, .85) 29% 33%, transparent 34%),
+    linear-gradient(180deg, transparent 18%, rgba(0, 0, 0, .08) 50%, rgba(0, 0, 0, .89) 100%);
+}
+
+.card[data-slug="no-signal"] .cardBackdrop::before {
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, .035) 0 1px, transparent 1px 4px),
+    radial-gradient(circle at 70% 48%, rgba(229, 78, 114, .7) 0 4%, rgba(157, 40, 69, .35) 5% 16%, transparent 25%),
+    linear-gradient(135deg, #19090f 0%, #5b1730 55%, #0e070a 100%);
+}
+
+.card[data-slug="boulevard"] .cardBackdrop::before {
+  background:
+    linear-gradient(90deg, transparent 0 25%, rgba(7, 12, 21, .45) 25% 27%, transparent 27% 48%, rgba(7, 12, 21, .55) 48% 51%, transparent 51%),
+    radial-gradient(ellipse at 70% 43%, rgba(101, 101, 255, .42), transparent 30%),
+    linear-gradient(135deg, #0d1532 0%, #252266 52%, #0a0b19 100%);
+}
+
+.card[data-slug="the-producer"] .cardBackdrop::before {
+  background:
+    radial-gradient(circle at 78% 28%, rgba(255, 197, 120, .55) 0 4%, transparent 5%),
+    linear-gradient(90deg, transparent 0 64%, rgba(16, 12, 9, .8) 65% 67%, transparent 68%),
+    linear-gradient(180deg, #783c51 0%, #b76066 44%, #273520 45%, #0c110b 100%);
+}
+
+/* Klasyki */
+.card[data-slug="meltdown"] .cardBackdrop::before {
+  background:
+    radial-gradient(circle at 68% 46%, rgba(238, 215, 176, .24), transparent 27%),
+    linear-gradient(135deg, #191919 0%, #4b4b48 53%, #0a0a0a 100%);
+  filter: sepia(.18) contrast(1.08);
+}
+
+.card[data-slug="deep-inside"] .cardBackdrop::before {
+  background:
+    radial-gradient(circle at 72% 40%, rgba(150, 212, 205, .24), transparent 27%),
+    linear-gradient(135deg, #0c1919 0%, #2e5552 53%, #081010 100%);
+  filter: saturate(.62);
+}
+
+.card[data-slug="capolavoro"] .cardBackdrop::before {
+  background:
+    linear-gradient(25deg, transparent 0 42%, rgba(221, 203, 174, .12) 43% 47%, transparent 48%),
+    linear-gradient(135deg, #201c18 0%, #6a5c4b 53%, #11100e 100%);
+  filter: sepia(.2) saturate(.6);
+}
+
+.card[data-slug="the-simian"] .cardBackdrop::before {
+  background:
+    radial-gradient(ellipse at 70% 45%, rgba(127, 154, 97, .25), transparent 30%),
+    linear-gradient(135deg, #12170f 0%, #45553a 53%, #0b0e09 100%);
+  filter: saturate(.6);
+}
+
+.card[data-slug="an-american-divorce"] .cardBackdrop::before {
+  background:
+    radial-gradient(circle at 72% 46%, rgba(179, 110, 95, .22), transparent 27%),
+    linear-gradient(135deg, #1b1110 0%, #623b36 53%, #0f0a0a 100%);
+  filter: saturate(.58) sepia(.08);
+}
+
+.card[data-slug="water-torture-ix"] .cardBackdrop::before {
+  background:
+    radial-gradient(ellipse at 70% 38%, rgba(121, 132, 146, .18), transparent 27%),
+    linear-gradient(135deg, #08090a 0%, #22262b 53%, #030405 100%);
+  filter: contrast(1.08) saturate(.45);
 }
 
 .cardBrand {
@@ -429,8 +547,8 @@
   top: 9px;
   left: 10px;
   z-index: 3;
-  color: rgba(255,255,255,.9);
-  font-family: Georgia,"Times New Roman",serif;
+  color: rgba(255, 255, 255, .9);
+  font-family: Georgia, "Times New Roman", serif;
   font-size: 9px;
   font-weight: 800;
   letter-spacing: .06em;
@@ -442,8 +560,8 @@
   right: 8px;
   z-index: 3;
   padding: 4px 6px;
-  border: 1px solid rgba(230,190,112,.75);
-  background: rgba(8,7,6,.52);
+  border: 1px solid rgba(230, 190, 112, .75);
+  background: rgba(8, 7, 6, .52);
   color: #efd290;
   font-size: 8px;
   font-weight: 900;
@@ -461,65 +579,79 @@
   max-width: 82%;
   margin: 0;
   color: #fff;
-  font-size: clamp(14px,1.13vw,19px);
+  font-size: clamp(14px, 1.12vw, 19px);
   line-height: .92;
   letter-spacing: -.04em;
   text-transform: uppercase;
-  text-shadow: 0 2px 15px rgba(0,0,0,.72);
+  text-shadow: 0 2px 15px rgba(0, 0, 0, .62);
 }
 
 .cardCopy span {
   display: block;
   margin-top: 7px;
-  color: rgba(255,255,255,.7);
+  color: rgba(255, 255, 255, .72);
   font-size: 9px;
 }
 
 .footer {
-  padding: 35px 4vw 48px;
-  border-top: 1px solid rgba(255,255,255,.06);
-  color: rgba(255,255,255,.45);
+  padding: 36px 4vw 50px;
+  border-top: 1px solid rgba(255, 255, 255, .06);
+  color: rgba(255, 255, 255, .45);
   font-size: 12px;
 }
 
-.footer strong { color: rgba(255,255,255,.72); }
+.footer strong { color: rgba(255, 255, 255, .72); }
 
 @media (max-width: 1200px) {
-  .track { grid-template-columns: repeat(3,minmax(210px,1fr)); }
-  .hero { min-height: 555px; }
-  .heroContent { width: min(430px,48vw); }
+  .track { grid-template-columns: repeat(3, minmax(210px, 1fr)); }
+  .hero { min-height: 600px; }
+  .heroContent { width: min(470px, 52vw); }
+  .heroTitle { font-size: clamp(50px, 6vw, 76px); }
 }
 
 @media (max-width: 850px) {
-  .topbar { grid-template-columns: 1fr auto; padding: 0 20px; }
+  .topbar {
+    grid-template-columns: 1fr auto;
+    padding: 0 20px;
+  }
+
   .nav { display: none; }
   .search span:last-child { display: none; }
+
   .hero {
-    min-height: 610px;
-    padding: 96px 24px 105px;
+    min-height: 620px;
+    padding: 98px 24px 104px;
     align-items: flex-end;
   }
-  .heroArtwork { background-position: 59% center; }
+
+  .heroArtwork {
+    background-position: 61% center;
+    filter: brightness(1.12) saturate(1.08);
+  }
+
   .heroShade {
     background:
-      linear-gradient(90deg, rgba(3,5,8,.82), rgba(3,5,8,.12)),
-      linear-gradient(180deg, rgba(3,5,8,.06) 0%, rgba(3,5,8,.12) 43%, rgba(3,5,8,.97) 84%);
+      linear-gradient(90deg, rgba(3, 5, 8, .82), rgba(3, 5, 8, .12)),
+      linear-gradient(180deg, rgba(3, 5, 8, .05) 0%, rgba(3, 5, 8, .15) 42%, rgba(3, 5, 8, .98) 82%);
   }
-  .heroContent { width: 100%; max-width: 500px; }
-  .heroTitle { font-size: clamp(50px,12vw,78px); }
-  .catalog { margin-top: -42px; padding-inline: 20px; }
-  .track { grid-template-columns: repeat(2,minmax(185px,1fr)); }
+
+  .heroContent { width: 100%; max-width: 520px; }
+  .catalog { margin-top: -40px; padding-inline: 18px; }
+  .track { grid-template-columns: repeat(2, minmax(220px, 1fr)); }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 620px) {
   .brandMain { font-size: 20px; }
   .brandPlus { font-size: 23px; }
-  .hero { min-height: 590px; padding-inline: 19px; }
-  .heroTitle { font-size: clamp(46px,16vw,68px); }
+  .profile { width: 36px; height: 36px; }
+  .heroTitle { font-size: clamp(48px, 15vw, 68px); }
   .description { font-size: 13px; }
   .heroButtons { flex-wrap: wrap; }
-  .track { display: flex; overflow-x: auto; }
-  .card { min-width: 78vw; }
+  .track {
+    display: flex;
+    overflow-x: auto;
+  }
+  .card { min-width: 250px; }
   .arrow { display: none; }
-  .pager { bottom: 27px; }
+  .pager { bottom: 26px; }
 }
