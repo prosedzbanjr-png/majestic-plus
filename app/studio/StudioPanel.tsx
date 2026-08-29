@@ -54,7 +54,7 @@ function toForm(item: Production): FormState {
     maturity: item.maturity,
     runtime: item.runtime,
     quality: item.quality,
-    cast: (item.cast ?? []).join(", "),
+    cast: (item.cast_members ?? []).join(", "),
     director: item.director,
     thumbnail_url: item.thumbnail_url ?? "",
     backdrop_url: item.backdrop_url ?? "",
