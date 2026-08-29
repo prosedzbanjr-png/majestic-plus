@@ -99,10 +99,20 @@ export default async function Home() {
                   aria-label={`${item.title}, ${item.meta}`}
                   data-slug={item.slug}
                 >
-                  <div
-                    className={`${styles.cardBackdrop} ${item.thumbnailUrl ? styles.cardPhoto : ""}`}
-                    style={item.thumbnailUrl ? { backgroundImage: `url("${item.thumbnailUrl}")` } : undefined}
-                  />
+                  <div className={styles.cardBackdrop} />
+                  {item.thumbnailUrl && (
+                    <div
+                      aria-hidden="true"
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        zIndex: 0,
+                        backgroundImage: `linear-gradient(180deg,rgba(0,0,0,.02) 10%,rgba(0,0,0,.08) 50%,rgba(0,0,0,.9) 100%),url("${item.thumbnailUrl}")`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }}
+                    />
+                  )}
                   <span className={styles.cardBrand}>RM</span>
                   {item.original && <span className={styles.originalBadge}>M+</span>}
                   <div className={styles.cardCopy}>
