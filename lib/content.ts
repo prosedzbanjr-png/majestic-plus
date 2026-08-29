@@ -45,7 +45,7 @@ export function productionToView(item: Production): ViewTitle {
     match: "NEW",
     genre: item.genre,
     description: item.description,
-    cast: item.cast ?? [],
+    cast: item.cast_members ?? [],
     director: item.director,
     original: item.original,
     featured: item.featured,
