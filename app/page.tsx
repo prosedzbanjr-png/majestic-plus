@@ -1,9 +1,13 @@
 import Link from "next/link";
-import { rows, titles } from "@/lib/catalog";
+import { getHomeContent } from "@/lib/content";
 import styles from "./home.module.css";
 
-export default function Home() {
-  const featured = titles.find((item) => item.slug === "vinewood-nights")!;
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const { featured, rows } = await getHomeContent();
+  const heroImage = featured.backdropUrl || featured.thumbnailUrl || "/hero-vinewood.svg";
+  const matchLabel = featured.match.endsWith("%") ? `${featured.match} match` : featured.match;
 
   return (
     <main className={styles.page}>
@@ -31,7 +35,7 @@ export default function Home() {
       </header>
 
       <section className={styles.hero}>
-        <div className={styles.heroArtwork} />
+        <div className={styles.heroArtwork} style={{ backgroundImage: `url("${heroImage}")` }} />
         <div className={styles.heroShade} />
         <div className={styles.heroGrain} />
 
@@ -39,14 +43,13 @@ export default function Home() {
         <button className={`${styles.arrow} ${styles.arrowRight}`} aria-label="Następna produkcja">›</button>
 
         <div className={styles.heroContent}>
-          <div className={styles.original}>MAJESTIC+ ORIGINAL</div>
+          <div className={styles.original}>{featured.original ? "MAJESTIC+ ORIGINAL" : "RICHARDS MAJESTIC"}</div>
           <h1 className={styles.heroTitle}>
-            <span>VINEWOOD</span>
-            <span>NIGHTS</span>
+            {featured.title.split(" ").map((part, index) => <span key={`${part}-${index}`}>{part}</span>)}
           </h1>
 
           <div className={styles.meta}>
-            <span className={styles.match}>{featured.match} match</span>
+            <span className={styles.match}>{matchLabel}</span>
             <span>{featured.year}</span>
             <span className={styles.maturity}>{featured.maturity}</span>
             <span>{featured.runtime}</span>
@@ -60,10 +63,10 @@ export default function Home() {
               <span>▶</span>
               Oglądaj
             </Link>
-            <button className={styles.secondary}>
+            <Link className={styles.secondary} href={`/title/${featured.slug}`}>
               <span>＋</span>
-              Moja lista
-            </button>
+              Więcej informacji
+            </Link>
           </div>
         </div>
 
@@ -88,27 +91,26 @@ export default function Home() {
             </div>
 
             <div className={styles.track}>
-              {row.slugs.map((slug) => {
-                const item = titles.find((entry) => entry.slug === slug)!;
-
-                return (
-                  <Link
-                    className={styles.card}
-                    href={`/title/${item.slug}`}
-                    key={item.slug}
-                    aria-label={`${item.title}, ${item.meta}`}
-                    data-slug={item.slug}
-                  >
-                    <div className={styles.cardBackdrop} />
-                    <span className={styles.cardBrand}>RM</span>
-                    {item.original && <span className={styles.originalBadge}>M+</span>}
-                    <div className={styles.cardCopy}>
-                      <h3>{item.title}</h3>
-                      <span>{item.meta}</span>
-                    </div>
-                  </Link>
-                );
-              })}
+              {row.items.map((item) => (
+                <Link
+                  className={styles.card}
+                  href={`/title/${item.slug}`}
+                  key={item.slug}
+                  aria-label={`${item.title}, ${item.meta}`}
+                  data-slug={item.slug}
+                >
+                  <div
+                    className={`${styles.cardBackdrop} ${item.thumbnailUrl ? styles.cardPhoto : ""}`}
+                    style={item.thumbnailUrl ? { backgroundImage: `url("${item.thumbnailUrl}")` } : undefined}
+                  />
+                  <span className={styles.cardBrand}>RM</span>
+                  {item.original && <span className={styles.originalBadge}>M+</span>}
+                  <div className={styles.cardCopy}>
+                    <h3>{item.title}</h3>
+                    <span>{item.meta}</span>
+                  </div>
+                </Link>
+              ))}
             </div>
           </section>
         ))}
