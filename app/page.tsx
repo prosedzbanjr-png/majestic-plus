@@ -1,54 +1,23 @@
-const rows = [
-  {
-    title: "Popularne teraz",
-    items: [
-      ["Vinewood Nights", "Crime · 2026", "poster red"],
-      ["Pacific Standard", "Thriller · 2026", "poster gold"],
-      ["The Last Take", "Drama · 2025", "poster blue"],
-      ["San Andreas", "Action · 2026", "poster orange"],
-      ["After Hours", "Mystery · 2025", "poster purple"],
-      ["Mirror Park", "Comedy · 2026", "poster green"],
-    ],
-  },
-  {
-    title: "Majestic+ Originals",
-    items: [
-      ["Red Carpet", "Original · Drama", "poster crimson"],
-      ["Southbound", "Original · Crime", "poster slate"],
-      ["Studio 4", "Original · Documentary", "poster amber"],
-      ["No Signal", "Original · Thriller", "poster navy"],
-      ["Boulevard", "Original · Romance", "poster wine"],
-      ["The Producer", "Original · Drama", "poster bronze"],
-    ],
-  },
-  {
-    title: "Klasyki Vinewood",
-    items: [
-      ["Meltdown", "Classic · 2013", "poster mono"],
-      ["Deep Inside", "Classic · 2013", "poster teal"],
-      ["Capolavoro", "Classic · 2012", "poster ivory"],
-      ["The Simian", "Classic · 2011", "poster moss"],
-      ["An American Divorce", "Classic · 2010", "poster dusk"],
-      ["Water Torture IX", "Classic · Horror", "poster black"],
-    ],
-  },
-];
+import Link from "next/link";
+import { rows, titles } from "@/lib/catalog";
 
 export default function Home() {
+  const featured = titles.find((item) => item.slug === "vinewood-nights")!;
+
   return (
     <main>
       <header className="topbar">
-        <a className="brand" href="#" aria-label="Majestic+ home">
+        <Link className="brand" href="/" aria-label="Majestic+ home">
           <span className="brand-main">MAJESTIC</span><span className="brand-plus">+</span>
-        </a>
+        </Link>
         <nav className="navlinks" aria-label="Główna nawigacja">
-          <a className="active" href="#">Strona główna</a>
+          <Link className="active" href="/">Strona główna</Link>
           <a href="#filmy">Filmy</a>
           <a href="#seriale">Seriale</a>
           <a href="#originals">Originals</a>
         </nav>
         <div className="nav-actions">
-          <button className="icon-button" aria-label="Szukaj">⌕</button>
+          <Link className="icon-button" href="/search" aria-label="Szukaj">⌕</Link>
           <button className="profile" aria-label="Profil">RM</button>
         </div>
       </header>
@@ -61,18 +30,15 @@ export default function Home() {
           <div className="eyebrow">A MAJESTIC+ ORIGINAL</div>
           <h1>VINEWOOD<br /><span>NIGHTS</span></h1>
           <div className="hero-meta">
-            <span className="match">98% match</span>
-            <span>2026</span>
-            <span className="rating">18+</span>
-            <span>2h 07m</span>
-            <span>4K</span>
+            <span className="match">{featured.match} match</span>
+            <span>{featured.year}</span>
+            <span className="rating">{featured.maturity}</span>
+            <span>{featured.runtime}</span>
+            <span>{featured.quality}</span>
           </div>
-          <p>
-            Gdy światła premier gasną, zaczyna się prawdziwe Vinewood. Młody producent
-            odkrywa układ, który może wynieść go na szczyt albo pogrzebać całe studio.
-          </p>
+          <p>{featured.description}</p>
           <div className="hero-buttons">
-            <button className="primary-btn"><span>▶</span> Oglądaj</button>
+            <Link className="primary-btn" href={`/title/${featured.slug}`}><span>▶</span> Oglądaj</Link>
             <button className="secondary-btn"><span>＋</span> Moja lista</button>
           </div>
         </div>
@@ -93,19 +59,22 @@ export default function Home() {
               <button>Zobacz wszystko <span>›</span></button>
             </div>
             <div className="card-track">
-              {row.items.map(([title, meta, className], index) => (
-                <article className={`movie-card ${className}`} key={title}>
-                  <div className="card-art">
-                    <div className="studio-mark">RM</div>
-                    {rowIndex === 1 && <div className="original-badge">M+</div>}
-                    <div className="card-index">{String(index + 1).padStart(2, "0")}</div>
-                    <div className="card-copy">
-                      <h3>{title}</h3>
-                      <span>{meta}</span>
+              {row.slugs.map((slug, index) => {
+                const item = titles.find((entry) => entry.slug === slug)!;
+                return (
+                  <Link className={`movie-card ${item.posterClass}`} href={`/title/${item.slug}`} key={item.slug}>
+                    <div className="card-art">
+                      <div className="studio-mark">RM</div>
+                      {item.original && <div className="original-badge">M+</div>}
+                      <div className="card-index">{String(index + 1).padStart(2, "0")}</div>
+                      <div className="card-copy">
+                        <h3>{item.title}</h3>
+                        <span>{item.meta}</span>
+                      </div>
                     </div>
-                  </div>
-                </article>
-              ))}
+                  </Link>
+                );
+              })}
             </div>
           </section>
         ))}
@@ -117,7 +86,7 @@ export default function Home() {
           <h2>The city is watching.</h2>
           <p>Największe premiery Los Santos, produkcje oryginalne i archiwum Vinewood w jednym miejscu.</p>
         </div>
-        <button className="outline-btn">Przeglądaj katalog</button>
+        <a className="outline-btn" href="#filmy">Przeglądaj katalog</a>
       </section>
 
       <footer>
