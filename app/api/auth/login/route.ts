@@ -1,16 +1,24 @@
 import { NextResponse } from "next/server";
-import { authRequest, VIEWER_ACCESS_COOKIE, VIEWER_REFRESH_COOKIE, viewerCookieOptions } from "@/lib/user-auth";
+import {
+  authRequest,
+  normalizeViewerUsername,
+  VIEWER_ACCESS_COOKIE,
+  VIEWER_REFRESH_COOKIE,
+  viewerCookieOptions,
+  viewerUsernameEmail,
+} from "@/lib/user-auth";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const email = String(body.email ?? "").trim().toLowerCase();
+    const username = normalizeViewerUsername(String(body.username ?? ""));
     const password = String(body.password ?? "");
 
-    if (!email || !password) {
-      return NextResponse.json({ error: "Podaj e-mail i hasło." }, { status: 400 });
+    if (!username || !password) {
+      return NextResponse.json({ error: "Podaj login i hasło." }, { status: 400 });
     }
 
+    const email = viewerUsernameEmail(username);
     const data = await authRequest("token?grant_type=password", {
       method: "POST",
       body: JSON.stringify({ email, password }),
@@ -20,10 +28,7 @@ export async function POST(request: Request) {
     response.cookies.set(VIEWER_ACCESS_COOKIE, data.access_token, viewerCookieOptions(Number(data.expires_in) || 3600));
     response.cookies.set(VIEWER_REFRESH_COOKIE, data.refresh_token, viewerCookieOptions(60 * 60 * 24 * 30));
     return response;
-  } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Nie udało się zalogować." },
-      { status: 400 },
-    );
+  } catch {
+    return NextResponse.json({ error: "Nieprawidłowy login lub hasło." }, { status: 400 });
   }
 }
