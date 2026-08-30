@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { getViewEpisodes, getViewTitle } from "@/lib/content";
 import { titles } from "@/lib/catalog";
 import { isStudioAuthenticated } from "@/lib/studio-auth";
+import { getCurrentViewer, viewerInitials } from "@/lib/user-auth";
+import MyListButton from "@/components/MyListButton";
 
 export function generateStaticParams() { return titles.map((item) => ({ slug: item.slug })); }
 export const dynamicParams = true;
@@ -17,7 +19,8 @@ export default async function TitlePage({
 }) {
   const { slug } = await params;
   const query = await searchParams;
-  const preview = query.preview === "1" && (await isStudioAuthenticated());
+  const [previewAllowed, viewer] = await Promise.all([isStudioAuthenticated(), getCurrentViewer()]);
+  const preview = query.preview === "1" && previewAllowed;
   const item = await getViewTitle(slug, preview);
   if (!item) notFound();
 
@@ -33,8 +36,8 @@ export default async function TitlePage({
     <main>
       <header className="topbar">
         <Link className="brand" href="/" aria-label="Majestic+ home"><span className="brand-main">MAJESTIC</span><span className="brand-plus">+</span></Link>
-        <nav className="navlinks" aria-label="Główna nawigacja"><Link href="/">Strona główna</Link><Link href="/#filmy">Filmy</Link><Link href="/#seriale">Seriale</Link><Link href="/#originals">Originals</Link></nav>
-        <div className="nav-actions"><Link className="icon-button" href="/search" aria-label="Szukaj">⌕</Link><button className="profile" aria-label="Profil">RM</button></div>
+        <nav className="navlinks" aria-label="Główna nawigacja"><Link href="/">Strona główna</Link><Link href="/#filmy">Filmy</Link><Link href="/#seriale">Seriale</Link><Link href="/#originals">Originals</Link><Link href="/my-list">Moja lista</Link></nav>
+        <div className="nav-actions"><Link className="icon-button" href="/search" aria-label="Szukaj">⌕</Link><Link className="profile" href="/account" aria-label={viewer ? "Twoje konto" : "Zaloguj się"}>{viewerInitials(viewer)}</Link></div>
       </header>
 
       <section style={{minHeight:"78vh",padding:"150px 6vw 80px",display:"flex",alignItems:"flex-end",position:"relative",overflow:"hidden",background:backgroundImage?`linear-gradient(90deg,rgba(4,5,8,.96) 0%,rgba(4,5,8,.68) 42%,rgba(4,5,8,.24) 70%),linear-gradient(180deg,rgba(4,5,8,.08),#070709 100%),url("${backgroundImage}") center/cover no-repeat`:"radial-gradient(circle at 75% 30%, rgba(181,143,77,.28), transparent 12%), radial-gradient(circle at 78% 46%, rgba(124,23,38,.42), transparent 25%), linear-gradient(110deg,#060608 10%,#0d0b0e 52%,#21131a 100%)"}}>
@@ -46,7 +49,7 @@ export default async function TitlePage({
           <p style={{maxWidth:650,color:"rgba(244,241,234,.82)",lineHeight:1.7,fontSize:17}}>{item.description}</p>
           <div className="hero-buttons">
             {watchHref ? <Link className="primary-btn" href={watchHref}><span>▶</span>{item.contentType === "series" ? "Oglądaj od początku" : "Oglądaj"}</Link> : <button className="primary-btn" disabled style={{opacity:.5}}><span>▶</span> Brak odcinków</button>}
-            <button className="secondary-btn"><span>＋</span> Moja lista</button>
+            <MyListButton productionId={item.id} />
           </div>
         </div>
       </section>
