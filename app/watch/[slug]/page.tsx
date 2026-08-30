@@ -1,64 +1,72 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getViewTitle } from "@/lib/content";
+import { getViewEpisodes, getViewTitle } from "@/lib/content";
 import { titles } from "@/lib/catalog";
+import { getEpisodeById } from "@/lib/majestic-db";
+import { isStudioAuthenticated } from "@/lib/studio-auth";
 import { youtubeEmbedUrl } from "@/lib/youtube";
 
-export function generateStaticParams() {
-  return titles.map((item) => ({ slug: item.slug }));
-}
-
+export function generateStaticParams() { return titles.map((item) => ({ slug: item.slug })); }
 export const dynamicParams = true;
 export const dynamic = "force-dynamic";
 
-export default async function WatchPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function WatchPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ episode?: string; preview?: string }>;
+}) {
   const { slug } = await params;
-  const item = await getViewTitle(slug);
-
+  const query = await searchParams;
+  const preview = query.preview === "1" && (await isStudioAuthenticated());
+  const item = await getViewTitle(slug, preview);
   if (!item) notFound();
 
-  const embedUrl = item.youtubeId ? youtubeEmbedUrl(item.youtubeId) : null;
+  let youtubeId = item.youtubeId ?? null;
+  let playingTitle = item.title;
+  let playingMeta = `${item.year} · ${item.maturity} · ${item.runtime} · ${item.quality}`;
+  let currentEpisodeId: string | null = null;
+  let episodes = [] as Awaited<ReturnType<typeof getViewEpisodes>>;
+
+  if (item.contentType === "series") {
+    episodes = await getViewEpisodes(item, preview);
+    const requested = query.episode ? await getEpisodeById(query.episode, preview) : null;
+    const episode = requested && requested.production_id === item.id ? requested : episodes[0] ?? null;
+    if (!episode) notFound();
+    youtubeId = episode.youtube_id;
+    currentEpisodeId = episode.id;
+    playingTitle = `${item.title} — ${episode.title}`;
+    playingMeta = `S${episode.season_number} E${episode.episode_number} · ${episode.runtime} · ${item.quality}`;
+  }
+
+  const embedUrl = youtubeId ? youtubeEmbedUrl(youtubeId) : null;
 
   return (
-    <main style={{ minHeight: "100vh", background: "#030304", display: "flex", flexDirection: "column" }}>
-      <header style={{ height: 72, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 3vw", borderBottom: "1px solid rgba(255,255,255,.08)", background: "#050507" }}>
-        <Link className="brand" href="/">
-          <span className="brand-main">MAJESTIC</span><span className="brand-plus">+</span>
-        </Link>
-        <Link href={`/title/${item.slug}`} style={{ color: "#aaa7a0", fontSize: 14 }}>← Wróć do produkcji</Link>
+    <main style={{minHeight:"100vh",background:"#030304",display:"flex",flexDirection:"column"}}>
+      <header style={{height:72,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 3vw",borderBottom:"1px solid rgba(255,255,255,.08)",background:"#050507"}}>
+        <Link className="brand" href="/"><span className="brand-main">MAJESTIC</span><span className="brand-plus">+</span></Link>
+        <Link href={`/title/${item.slug}${preview ? "?preview=1" : ""}`} style={{color:"#aaa7a0",fontSize:14}}>← Wróć do produkcji</Link>
       </header>
 
-      <section style={{ flex: 1, display: "grid", placeItems: "center", padding: "4vw" }}>
-        <div style={{ width: "min(100%, 1380px)" }}>
-          <div style={{ aspectRatio: "16/9", border: "1px solid rgba(255,255,255,.08)", background: "#000", position: "relative", overflow: "hidden", boxShadow: "0 30px 100px rgba(0,0,0,.55)" }}>
-            {embedUrl ? (
-              <iframe
-                src={embedUrl}
-                title={item.title}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowFullScreen
-                referrerPolicy="strict-origin-when-cross-origin"
-                style={{ width: "100%", height: "100%", border: 0, display: "block" }}
-              />
-            ) : (
-              <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", textAlign: "center", padding: 30, background: item.thumbnailUrl ? `linear-gradient(rgba(0,0,0,.72),rgba(0,0,0,.86)),url("${item.thumbnailUrl}") center/cover` : "radial-gradient(circle at 50% 45%, rgba(134,29,45,.25), transparent 30%), linear-gradient(135deg,#111115,#050506)" }}>
-                <div>
-                  <div style={{ fontSize: 42, marginBottom: 14 }}>▶</div>
-                  <strong>Materiał nie został jeszcze podpięty.</strong>
-                  <p style={{ color: "#888", marginBottom: 0 }}>Dodaj link YouTube w panelu /studio.</p>
-                </div>
-              </div>
-            )}
+      <section style={{flex:1,display:"grid",placeItems:"center",padding:"4vw"}}>
+        <div style={{width:"min(100%, 1380px)"}}>
+          {preview && <div style={{marginBottom:12,color:"#deb65f",fontSize:10,fontWeight:900,letterSpacing:".14em"}}>PODGLĄD STUDIO</div>}
+          <div style={{aspectRatio:"16/9",border:"1px solid rgba(255,255,255,.08)",background:"#000",position:"relative",overflow:"hidden",boxShadow:"0 30px 100px rgba(0,0,0,.55)"}}>
+            {embedUrl ? <iframe src={embedUrl} title={playingTitle} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" style={{width:"100%",height:"100%",border:0,display:"block"}} /> : <div style={{position:"absolute",inset:0,display:"grid",placeItems:"center",textAlign:"center",padding:30,background:item.thumbnailUrl?`linear-gradient(rgba(0,0,0,.72),rgba(0,0,0,.86)),url("${item.thumbnailUrl}") center/cover`:"radial-gradient(circle at 50% 45%, rgba(134,29,45,.25), transparent 30%), linear-gradient(135deg,#111115,#050506)"}}><div><div style={{fontSize:42,marginBottom:14}}>▶</div><strong>Materiał nie został jeszcze podpięty.</strong></div></div>}
           </div>
 
-          <div style={{ display: "flex", justifyContent: "space-between", gap: 30, alignItems: "flex-start", marginTop: 24 }}>
-            <div>
-              <span className="spotlight-kicker">NOW PLAYING</span>
-              <h1 style={{ fontFamily: 'Georgia, "Times New Roman", serif', fontSize: "clamp(34px,4vw,58px)", margin: "8px 0" }}>{item.title}</h1>
-              <p style={{ color: "#aaa7a0", margin: 0 }}>{item.year} · {item.maturity} · {item.runtime} · {item.quality}</p>
-            </div>
+          <div style={{display:"flex",justifyContent:"space-between",gap:30,alignItems:"flex-start",marginTop:24}}>
+            <div><span className="spotlight-kicker">NOW PLAYING</span><h1 style={{fontFamily:'Georgia, "Times New Roman", serif',fontSize:"clamp(34px,4vw,58px)",margin:"8px 0"}}>{playingTitle}</h1><p style={{color:"#aaa7a0",margin:0}}>{playingMeta}</p></div>
             <button className="secondary-btn">＋ Moja lista</button>
           </div>
+
+          {item.contentType === "series" && episodes.length > 1 && <div style={{marginTop:34,borderTop:"1px solid rgba(255,255,255,.08)",paddingTop:24}}>
+            <span className="spotlight-kicker">NASTĘPNE ODCINKI</span>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:10,marginTop:14}}>
+              {episodes.map((episode) => <Link key={episode.id} href={`/watch/${item.slug}?episode=${episode.id}${preview ? "&preview=1" : ""}`} style={{padding:12,borderRadius:8,border:episode.id===currentEpisodeId?"1px solid rgba(220,174,81,.55)":"1px solid rgba(255,255,255,.08)",background:episode.id===currentEpisodeId?"rgba(220,174,81,.08)":"#0a0d12"}}><div style={{aspectRatio:"16/9",borderRadius:6,background:`#111 url("${episode.thumbnail_url ?? ""}") center/cover`,marginBottom:10}}/><span style={{color:"#d9af59",fontSize:9,fontWeight:900}}>S{episode.season_number} E{episode.episode_number}</span><strong style={{display:"block",marginTop:4}}>{episode.title}</strong></Link>)}
+            </div>
+          </div>}
         </div>
       </section>
     </main>
