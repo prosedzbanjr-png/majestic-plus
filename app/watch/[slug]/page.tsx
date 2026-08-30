@@ -5,6 +5,7 @@ import { titles } from "@/lib/catalog";
 import { getEpisodeById } from "@/lib/majestic-db";
 import { isStudioAuthenticated } from "@/lib/studio-auth";
 import { youtubeEmbedUrl } from "@/lib/youtube";
+import MyListButton from "@/components/MyListButton";
 
 export function generateStaticParams() { return titles.map((item) => ({ slug: item.slug })); }
 export const dynamicParams = true;
@@ -58,7 +59,7 @@ export default async function WatchPage({
 
           <div style={{display:"flex",justifyContent:"space-between",gap:30,alignItems:"flex-start",marginTop:24}}>
             <div><span className="spotlight-kicker">NOW PLAYING</span><h1 style={{fontFamily:'Georgia, "Times New Roman", serif',fontSize:"clamp(34px,4vw,58px)",margin:"8px 0"}}>{playingTitle}</h1><p style={{color:"#aaa7a0",margin:0}}>{playingMeta}</p></div>
-            <button className="secondary-btn">＋ Moja lista</button>
+            <MyListButton productionId={item.id} />
           </div>
 
           {item.contentType === "series" && episodes.length > 1 && <div style={{marginTop:34,borderTop:"1px solid rgba(255,255,255,.08)",paddingTop:24}}>
