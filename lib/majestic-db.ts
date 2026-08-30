@@ -23,8 +23,11 @@ export type Production = {
   updated_at: string;
 };
 
-const baseUrl = process.env.SUPABASE_URL?.replace(/\/$/, "") ?? "";
-const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
+const rawBaseUrl = process.env.SUPABASE_URL?.trim() ?? "";
+const baseUrl = rawBaseUrl
+  .replace(/\/+$/, "")
+  .replace(/\/rest\/v1$/i, "");
+const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim() ?? "";
 
 export function isSupabaseConfigured() {
   return Boolean(baseUrl && serviceKey);
