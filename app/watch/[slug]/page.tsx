@@ -4,6 +4,8 @@ import { getViewEpisodes, getViewTitle } from "@/lib/content";
 import { titles } from "@/lib/catalog";
 import { getEpisodeById } from "@/lib/majestic-db";
 import { isStudioAuthenticated } from "@/lib/studio-auth";
+import { getCurrentViewer } from "@/lib/user-auth";
+import { hasActiveSubscription } from "@/lib/billing";
 import { youtubeEmbedUrl } from "@/lib/youtube";
 import MyListButton from "@/components/MyListButton";
 
@@ -23,6 +25,33 @@ export default async function WatchPage({
   const preview = query.preview === "1" && (await isStudioAuthenticated());
   const item = await getViewTitle(slug, preview);
   if (!item) notFound();
+
+  const viewer = preview ? null : await getCurrentViewer();
+  const subscribed = preview || Boolean(viewer && await hasActiveSubscription(viewer.id));
+
+  if (!subscribed) {
+    return (
+      <main style={{ minHeight: "100vh", background: "#030304", color: "#f3efe6", display: "flex", flexDirection: "column" }}>
+        <header style={{ height: 72, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 3vw", borderBottom: "1px solid rgba(255,255,255,.08)", background: "#050507" }}>
+          <Link className="brand" href="/"><span className="brand-main">MAJESTIC</span><span className="brand-plus">+</span></Link>
+          <Link href={`/title/${item.slug}`} style={{ color: "#aaa7a0", fontSize: 14 }}>← Wróć do produkcji</Link>
+        </header>
+        <section style={{ flex: 1, display: "grid", placeItems: "center", padding: "6vw 4vw" }}>
+          <div style={{ width: "min(760px, 100%)", textAlign: "center", padding: "48px 34px", border: "1px solid rgba(224,183,95,.2)", borderRadius: 16, background: "radial-gradient(circle at 50% 0%,rgba(224,183,95,.12),transparent 24rem),#090b10", boxShadow: "0 30px 100px rgba(0,0,0,.45)" }}>
+            <div style={{ color: "#e2b85f", fontSize: 11, fontWeight: 900, letterSpacing: ".2em" }}>MAJESTIC+ MEMBERSHIP</div>
+            <h1 style={{ fontFamily: 'Georgia, "Times New Roman", serif', fontSize: "clamp(42px,7vw,72px)", fontWeight: 500, margin: "14px 0 16px" }}>{viewer ? "Wymagana subskrypcja" : "Zaloguj się, aby oglądać"}</h1>
+            <p style={{ maxWidth: 580, margin: "0 auto", color: "#aaa7a0", lineHeight: 1.75, fontSize: 16 }}>
+              {viewer ? `„${item.title}” jest dostępne w aktywnym planie Majestic+. Wybierz plan i od razu wróć do oglądania.` : `„${item.title}” wymaga konta Majestic+ oraz aktywnej subskrypcji.`}
+            </p>
+            <div style={{ display: "flex", justifyContent: "center", gap: 10, flexWrap: "wrap", marginTop: 28 }}>
+              {viewer ? <Link className="primary-btn" href="/subscription">Wybierz plan</Link> : <Link className="primary-btn" href={`/account?next=/watch/${item.slug}`}>Zaloguj się</Link>}
+              <Link className="secondary-btn" href={`/title/${item.slug}`}>Więcej informacji</Link>
+            </div>
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   let youtubeId = item.youtubeId ?? null;
   let playingTitle = item.title;
@@ -47,7 +76,7 @@ export default async function WatchPage({
     <main style={{minHeight:"100vh",background:"#030304",display:"flex",flexDirection:"column"}}>
       <header style={{height:72,display:"flex",alignItems:"center",justifyContent:"space-between",padding:"0 3vw",borderBottom:"1px solid rgba(255,255,255,.08)",background:"#050507"}}>
         <Link className="brand" href="/"><span className="brand-main">MAJESTIC</span><span className="brand-plus">+</span></Link>
-        <Link href={`/title/${item.slug}${preview ? "?preview=1" : ""}`} style={{color:"#aaa7a0",fontSize:14}}>← Wróć do produkcji</Link>
+        <div style={{display:"flex",alignItems:"center",gap:18}}>{!preview && <Link href="/account" style={{color:"#d9b662",fontSize:12,fontWeight:800}}>SUBSKRYPCJA AKTYWNA</Link>}<Link href={`/title/${item.slug}${preview ? "?preview=1" : ""}`} style={{color:"#aaa7a0",fontSize:14}}>← Wróć do produkcji</Link></div>
       </header>
 
       <section style={{flex:1,display:"grid",placeItems:"center",padding:"4vw"}}>
