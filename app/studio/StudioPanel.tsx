@@ -78,6 +78,8 @@ export default function StudioPanel({ initialProductions }: { initialProductions
     return productions.filter((item) => `${item.title} ${item.genre} ${item.status}`.toLowerCase().includes(q));
   }, [productions, query]);
 
+  const messageIsError = /nie udało|error|supabase\s+\d|failed|invalid|błąd/i.test(message);
+
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((current) => ({ ...current, [key]: value }));
   }
@@ -189,7 +191,7 @@ export default function StudioPanel({ initialProductions }: { initialProductions
             </label>
           </div>
 
-          {message && <div className={message.toLowerCase().includes("nie") || message.toLowerCase().includes("error") ? styles.error : styles.success}>{message}</div>}
+          {message && <div className={messageIsError ? styles.error : styles.success}>{message}</div>}
 
           <div className={styles.formActions}>
             <button className={styles.goldButton} disabled={loading} type="submit">{loading ? "ZAPISYWANIE..." : editingId ? "ZAPISZ ZMIANY" : "DODAJ PRODUKCJĘ"}</button>
