@@ -2,7 +2,7 @@ import Link from "next/link";
 import AuthPanel from "./AuthPanel";
 import LogoutButton from "./LogoutButton";
 import styles from "./account.module.css";
-import { getCurrentViewer, isViewerAuthConfigured, viewerDisplayName, viewerInitials } from "@/lib/user-auth";
+import { getCurrentViewer, isViewerAuthConfigured, viewerDisplayName, viewerInitials, viewerUsername } from "@/lib/user-auth";
 import { getMyListIds, getViewerProfile } from "@/lib/viewer-data";
 
 export const dynamic = "force-dynamic";
@@ -27,6 +27,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
   }
 
   const displayName = profile?.display_name || viewerDisplayName(viewer);
+  const username = viewerUsername(viewer);
 
   return (
     <main className={styles.page}>
@@ -53,7 +54,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
                 <div className={styles.avatar}>{viewerInitials(viewer)}</div>
                 <div>
                   <h2>{displayName}</h2>
-                  <p>{viewer.email ?? ""}</p>
+                  <p>@{username}</p>
                 </div>
               </div>
               <div className={styles.stat}>W Twojej liście: <strong>{listCount}</strong> {listCount === 1 ? "produkcja" : "produkcji"}</div>
@@ -64,7 +65,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
               </div>
             </div>
             <aside className={styles.aside}>
-              <div className={styles.asideBox}><h3>Twój profil</h3><p>Nick jest widoczny tylko jako element profilu Majestic+. Logowanie odbywa się przez adres e-mail.</p></div>
+              <div className={styles.asideBox}><h3>Twój profil</h3><p>Logujesz się własnym loginem, a w serwisie wyświetlany jest wybrany przez Ciebie nick.</p></div>
               <div className={styles.asideBox}><h3>Moja lista</h3><p>Zapisane filmy i seriale są przypisane do konta, więc nie znikną po zmianie urządzenia.</p></div>
             </aside>
           </div>
@@ -72,9 +73,9 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
           <div className={styles.grid}>
             <AuthPanel nextPath={nextPath} />
             <aside className={styles.aside}>
-              <div className={styles.asideBox}><h3>Jedno konto</h3><p>Logujesz się mailem, a w serwisie wyświetlamy wybrany przez Ciebie nick.</p></div>
+              <div className={styles.asideBox}><h3>Bez prawdziwego maila</h3><p>Konto Majestic+ działa na loginie i haśle. Żaden prawdziwy adres e-mail nie jest potrzebny.</p></div>
               <div className={styles.asideBox}><h3>Własna lista</h3><p>Dodawaj filmy i seriale do „Mojej listy” i wracaj do nich później.</p></div>
-              <div className={styles.asideBox}><h3>Studio osobno</h3><p>Konta widzów nie dają dostępu do panelu redakcyjnego /studio.</p></div>
+              <div className={styles.asideBox}><h3>Studio osobno</h3><p>Konta widzów nie dają dostępu do panelu /studio.</p></div>
             </aside>
           </div>
         )}
