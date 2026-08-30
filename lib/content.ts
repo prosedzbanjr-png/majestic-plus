@@ -1,5 +1,11 @@
 import { getTitle, rows as staticRows, titles as staticTitles, type Title } from "@/lib/catalog";
-import { getProductionBySlug, getPublishedProductions, type Production } from "@/lib/majestic-db";
+import {
+  getEpisodesForProduction,
+  getProductionBySlug,
+  getPublishedProductions,
+  type Episode,
+  type Production,
+} from "@/lib/majestic-db";
 
 export type ViewTitle = {
   id?: string;
@@ -18,8 +24,11 @@ export type ViewTitle = {
   original: boolean;
   featured: boolean;
   posterClass: string;
-  youtubeUrl?: string;
-  youtubeId?: string;
+  contentType: "film" | "series";
+  homeSection: "popular" | "originals" | "latest";
+  displayOrder: number;
+  youtubeUrl?: string | null;
+  youtubeId?: string | null;
   thumbnailUrl?: string | null;
   backdropUrl?: string | null;
 };
@@ -29,6 +38,9 @@ export function staticToView(item: Title): ViewTitle {
     ...item,
     original: Boolean(item.original),
     featured: item.slug === "vinewood-nights",
+    contentType: "film",
+    homeSection: item.original ? "originals" : "popular",
+    displayOrder: 999,
   };
 }
 
@@ -37,7 +49,7 @@ export function productionToView(item: Production): ViewTitle {
     id: item.id,
     slug: item.slug,
     title: item.title,
-    meta: `${item.genre} · ${item.year}`,
+    meta: `${item.content_type === "series" ? "Serial" : item.genre} · ${item.year}`,
     year: String(item.year),
     maturity: item.maturity,
     runtime: item.runtime,
@@ -50,6 +62,9 @@ export function productionToView(item: Production): ViewTitle {
     original: item.original,
     featured: item.featured,
     posterClass: "",
+    contentType: item.content_type ?? "film",
+    homeSection: item.home_section ?? "latest",
+    displayOrder: item.display_order ?? 0,
     youtubeUrl: item.youtube_url,
     youtubeId: item.youtube_id,
     thumbnailUrl: item.thumbnail_url,
@@ -57,11 +72,16 @@ export function productionToView(item: Production): ViewTitle {
   };
 }
 
-export async function getViewTitle(slug: string): Promise<ViewTitle | null> {
-  const production = await getProductionBySlug(slug);
+export async function getViewTitle(slug: string, includeDraft = false): Promise<ViewTitle | null> {
+  const production = await getProductionBySlug(slug, includeDraft);
   if (production) return productionToView(production);
   const fallback = getTitle(slug);
   return fallback ? staticToView(fallback) : null;
+}
+
+export async function getViewEpisodes(item: ViewTitle, includeDraft = false): Promise<Episode[]> {
+  if (!item.id || item.contentType !== "series") return [];
+  return getEpisodesForProduction(item.id, includeDraft);
 }
 
 function fill(items: ViewTitle[], fallbacks: ViewTitle[], limit = 6) {
@@ -86,28 +106,18 @@ export async function getHomeContent() {
   }));
 
   const staticFeatured = fallbackBySlug.get("vinewood-nights")!;
-  if (!db.length) {
-    return { featured: staticFeatured, rows: fallbackRows };
-  }
+  if (!db.length) return { featured: staticFeatured, rows: fallbackRows };
 
   const featured = db.find((item) => item.featured) ?? db[0] ?? staticFeatured;
-  const originals = db.filter((item) => item.original);
+  const bySection = (section: ViewTitle["homeSection"]) =>
+    db.filter((item) => item.homeSection === section).sort((a, b) => a.displayOrder - b.displayOrder);
 
   return {
     featured,
     rows: [
-      {
-        title: "Popularne teraz",
-        items: fill(db.slice(0, 6), fallbackRows[0]?.items ?? []),
-      },
-      {
-        title: "Majestic+ Originals",
-        items: fill(originals.slice(0, 6), fallbackRows[1]?.items ?? []),
-      },
-      {
-        title: "Ostatnio dodane",
-        items: fill(db.slice(0, 6), fallbackRows[2]?.items ?? []),
-      },
+      { title: "Popularne teraz", items: fill(bySection("popular"), fallbackRows[0]?.items ?? []) },
+      { title: "Majestic+ Originals", items: fill(bySection("originals"), fallbackRows[1]?.items ?? []) },
+      { title: "Ostatnio dodane", items: fill(bySection("latest"), fallbackRows[2]?.items ?? []) },
     ],
   };
 }
