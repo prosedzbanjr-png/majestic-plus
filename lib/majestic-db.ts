@@ -79,6 +79,56 @@ async function request(path: string, init?: RequestInit) {
   return text ? JSON.parse(text) : null;
 }
 
+const catalogProductionSelect = [
+  "id",
+  "slug",
+  "title",
+  "description",
+  "genre",
+  "year",
+  "maturity",
+  "runtime",
+  "original",
+  "featured",
+  "content_type",
+  "home_section",
+  "display_order",
+  "thumbnail_url",
+  "backdrop_url",
+].join(",");
+
+const catalogEpisodeSelect = [
+  "id",
+  "production_id",
+  "season_number",
+  "episode_number",
+  "title",
+  "description",
+  "runtime",
+  "thumbnail_url",
+  "display_order",
+].join(",");
+
+/** Strict, narrow catalog reads used by the public versioned API. */
+export async function getPublishedCatalogRows(limit: number): Promise<unknown[]> {
+  return (await request(
+    `majestic_productions?select=${catalogProductionSelect}&status=eq.published&order=featured.desc,display_order.asc,created_at.desc&limit=${limit}`,
+  )) as unknown[];
+}
+
+export async function getPublishedCatalogRowBySlug(slug: string): Promise<unknown | null> {
+  const rows = (await request(
+    `majestic_productions?select=${catalogProductionSelect}&slug=eq.${encodeURIComponent(slug)}&status=eq.published&limit=1`,
+  )) as unknown[];
+  return rows[0] ?? null;
+}
+
+export async function getPublishedCatalogEpisodeRows(productionId: string, limit: number): Promise<unknown[]> {
+  return (await request(
+    `majestic_episodes?select=${catalogEpisodeSelect}&production_id=eq.${encodeURIComponent(productionId)}&status=eq.published&order=season_number.asc,display_order.asc,episode_number.asc&limit=${limit}`,
+  )) as unknown[];
+}
+
 export async function getPublishedProductions(): Promise<Production[]> {
   if (!isSupabaseConfigured()) return [];
   try {
