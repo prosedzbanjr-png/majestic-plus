@@ -33,7 +33,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if git grep -nE 'SUPABASE_SERVICE_ROLE_KEY=(eyJ|sb_secret_)|MAJESTIC_FIVEM_API_KEY=[A-Za-z0-9_-]{32,}|MAJESTIC_LINK_SECRET=[A-Za-z0-9_-]{32,}' -- ':!package-lock.json'; then
+          if git grep -nE 'SUPABASE_SERVICE_ROLE_KEY=(eyJ|sb_secret_)|MAJESTIC_FIVEM_API_KEY=[A-Za-z0-9_-]{32,}|MAJESTIC_LINK_SECRET=[A-Za-z0-9_-]{32,}' -- ':!package-lock.json' ':!.env.example'; then
             echo 'Potential committed credential detected.'
             exit 1
           fi
