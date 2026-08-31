@@ -1,0 +1,58 @@
+name: Production smoke once
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/production-smoke-once.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Verify production API
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE='https://majestic-plus.vercel.app'
+          for attempt in {1..12}; do
+            status=$(curl -sS -o /tmp/catalog -w '%{http_code}' "$BASE/api/v1/fivem/catalog" || true)
+            code=$(jq -r '.error.code // "none"' /tmp/catalog 2>/dev/null || true)
+            echo "attempt=$attempt catalog_http=$status code=$code"
+            if [[ "$status" == "200" ]] && jq -e '.ok == true and .data.version == "1" and (.data.rows | type == "array")' /tmp/catalog >/dev/null 2>&1; then
+              echo 'PRODUCTION_CATALOG_PASS'
+              break
+            fi
+            if [[ "$attempt" == "12" ]]; then
+              echo 'PRODUCTION_CATALOG_FAIL'
+              exit 1
+            fi
+            sleep 5
+          done
+
+          title=$(jq -r '.data.featured.title // ([.data.rows[].items[]][0].title // empty)' /tmp/catalog)
+          slug=$(jq -r '.data.featured.slug // ([.data.rows[].items[]][0].slug // empty)' /tmp/catalog)
+          test -n "$title"
+          test -n "$slug"
+
+          status=$(curl -sS -G -o /tmp/search -w '%{http_code}' --data-urlencode "q=$title" "$BASE/api/v1/fivem/catalog/search")
+          echo "search_http=$status"
+          test "$status" = "200"
+          jq -e --arg slug "$slug" '.ok == true and ([.data.items[].slug] | index($slug) != null)' /tmp/search >/dev/null
+
+          status=$(curl -sS -o /tmp/title -w '%{http_code}' "$BASE/api/v1/fivem/titles/$slug")
+          echo "title_http=$status"
+          test "$status" = "200"
+          jq -e --arg slug "$slug" '.ok == true and .data.slug == $slug' /tmp/title >/dev/null
+
+          status=$(curl -sS -L -o /dev/null -w '%{http_code}' "$BASE/")
+          echo "homepage_http=$status"
+          test "$status" -ge 200
+          test "$status" -lt 400
+
+          echo 'PRODUCTION_SMOKE_PASS'
