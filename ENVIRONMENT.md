@@ -18,3 +18,7 @@ Set one of these public auth keys (the app supports either name):
 Viewer authentication is server-mediated through Next.js route handlers. The public/publishable key is used only for Supabase Auth; the service-role key remains server-only.
 
 After adding or changing environment variables on Vercel, redeploy the production deployment.
+
+## FiveM catalog API
+
+The Phase 2 catalog routes use the existing server-only `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` to read published catalog rows. They do not require a FiveM machine secret because the returned metadata is intentionally public and browse-only. Never copy either Supabase value into the FiveM resource or NUI.
