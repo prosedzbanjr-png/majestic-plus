@@ -1,0 +1,114 @@
+name: Phase 2 production smoke
+
+on:
+  push:
+    branches:
+      - staging/fivem-catalog-phase2-materialize
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Verify production API and website
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE='https://majestic-plus.vercel.app'
+
+          status=$(curl -sS -o /tmp/catalog -D /tmp/catalog-headers -w '%{http_code}' "$BASE/api/v1/fivem/catalog")
+          echo "catalog_http=$status"
+          if [[ "$status" != "200" ]]; then
+            code=$(jq -r '.error.code // "none"' /tmp/catalog 2>/dev/null || true)
+            echo "catalog_safe_code=$code"
+            exit 1
+          fi
+          jq -e '.ok == true and .data.version == "1" and (.data.rows | type == "array")' /tmp/catalog >/dev/null
+          test "$(wc -c < /tmp/catalog)" -le 262144
+          if jq -r '.. | objects | keys[]?' /tmp/catalog | grep -Eiq '^(youtube_url|youtube_id|cast_members|home_section|display_order|payment|billing|viewer|supabase_service_role_key)$'; then
+            echo 'UNSAFE_RAW_FIELD_FOUND'
+            exit 1
+          fi
+
+          title=$(jq -r '.data.featured.title // ([.data.rows[].items[]][0].title // empty)' /tmp/catalog)
+          slug=$(jq -r '.data.featured.slug // ([.data.rows[].items[]][0].slug // empty)' /tmp/catalog)
+          type=$(jq -r '.data.featured.type // ([.data.rows[].items[]][0].type // empty)' /tmp/catalog)
+          test -n "$title"
+          test -n "$slug"
+          echo "known_title=$title"
+          echo "known_slug=$slug"
+
+          status=$(curl -sS -G -o /tmp/search-known -w '%{http_code}' --data-urlencode "q=$title" "$BASE/api/v1/fivem/catalog/search")
+          echo "search_known_http=$status"
+          test "$status" = "200"
+          jq -e --arg slug "$slug" '.ok == true and .data.version == "1" and ([.data.items[].slug] | index($slug) != null)' /tmp/search-known >/dev/null
+
+          partial=$(printf '%s' "$title" | cut -c1-4)
+          status=$(curl -sS -G -o /tmp/search-partial -w '%{http_code}' --data-urlencode "q=$partial" "$BASE/api/v1/fivem/catalog/search")
+          echo "search_partial_http=$status"
+          test "$status" = "200"
+
+          status=$(curl -sS -G -o /tmp/search-unicode -w '%{http_code}' --data-urlencode 'q=żółć' "$BASE/api/v1/fivem/catalog/search")
+          echo "search_unicode_http=$status"
+          test "$status" = "200"
+
+          status=$(curl -sS -G -o /tmp/search-none -w '%{http_code}' --data-urlencode 'q=definitely-no-such-majestic-title-928374' "$BASE/api/v1/fivem/catalog/search")
+          echo "search_none_http=$status"
+          test "$status" = "200"
+          jq -e '.ok == true and (.data.items | length == 0)' /tmp/search-none >/dev/null
+
+          status=$(curl -sS -o /tmp/search-empty -w '%{http_code}' "$BASE/api/v1/fivem/catalog/search?q=")
+          code=$(jq -r '.error.code // "none"' /tmp/search-empty 2>/dev/null || true)
+          echo "search_empty_http=$status code=$code"
+          test "$status" = "400"
+          test "$code" = "SEARCH_INVALID"
+
+          overlong=$(printf 'a%.0s' {1..81})
+          status=$(curl -sS -G -o /tmp/search-long -w '%{http_code}' --data-urlencode "q=$overlong" "$BASE/api/v1/fivem/catalog/search")
+          code=$(jq -r '.error.code // "none"' /tmp/search-long 2>/dev/null || true)
+          echo "search_overlong_http=$status code=$code"
+          test "$status" = "400"
+          test "$code" = "SEARCH_INVALID"
+
+          status=$(curl -sS -G -o /tmp/search-limit -w '%{http_code}' --data-urlencode "q=$title" --data-urlencode 'limit=0' "$BASE/api/v1/fivem/catalog/search")
+          code=$(jq -r '.error.code // "none"' /tmp/search-limit 2>/dev/null || true)
+          echo "search_invalid_limit_http=$status code=$code"
+          test "$status" = "400"
+          test "$code" = "SEARCH_INVALID"
+
+          status=$(curl -sS -o /tmp/title-known -w '%{http_code}' "$BASE/api/v1/fivem/titles/$slug")
+          echo "title_known_http=$status"
+          test "$status" = "200"
+          jq -e --arg slug "$slug" '.ok == true and .data.version == "1" and .data.slug == $slug' /tmp/title-known >/dev/null
+          if [[ "$type" == "series" ]]; then
+            jq -e '.data.seasons | type == "array"' /tmp/title-known >/dev/null
+            echo 'series_episodes_check=PASS'
+          else
+            echo 'series_episodes_check=NOT_APPLICABLE'
+          fi
+
+          status=$(curl -sS -o /tmp/title-missing -w '%{http_code}' "$BASE/api/v1/fivem/titles/this-title-does-not-exist")
+          code=$(jq -r '.error.code // "none"' /tmp/title-missing 2>/dev/null || true)
+          echo "title_missing_http=$status code=$code"
+          test "$status" = "404"
+          test "$code" = "TITLE_NOT_FOUND"
+
+          {
+            jq -r '.. | objects | .posterUrl?, .backdropUrl?, .artworkUrl? // empty' /tmp/catalog
+            jq -r '.. | objects | .posterUrl?, .backdropUrl?, .artworkUrl? // empty' /tmp/title-known
+          } | sed -nE 's#https://([^/]+).*#\1#p' | sort -u > /tmp/art-hosts
+          echo 'artwork_hosts_begin'
+          cat /tmp/art-hosts
+          echo 'artwork_hosts_end'
+
+          for path in '/' '/search?q=Space%20Trip' "/title/$slug" '/account' '/studio'; do
+            status=$(curl -sS -L -o /dev/null -w '%{http_code}' "$BASE$path")
+            echo "page_${path}_http=$status"
+            test "$status" -ge 200
+            test "$status" -lt 400
+          done
+
+          echo 'PRODUCTION_ACCEPTANCE_PASS'
