@@ -15,8 +15,16 @@ jobs:
     steps:
       - name: Probe protected preview
         shell: bash
+        env:
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
         run: |
           set -euo pipefail
+          if [[ -n "${VERCEL_AUTOMATION_BYPASS_SECRET:-}" ]]; then
+            {
+              printf 'header = "x-vercel-protection-bypass: %s"\n' "$VERCEL_AUTOMATION_BYPASS_SECRET"
+              printf 'header = "x-vercel-set-bypass-cookie: true"\n'
+            } > "$HOME/.curlrc"
+          fi
           BASE='https://majestic-plus-git-feat-fivem-catalog-phase2-asd-d8e6.vercel.app'
           status=$(curl -sS -o /tmp/catalog-body -D /tmp/catalog-headers -w '%{http_code}' "$BASE/api/v1/fivem/catalog")
           ctype=$(awk 'BEGIN{IGNORECASE=1} /^content-type:/ {sub(/\r$/,""); print substr($0,index($0,":")+2)}' /tmp/catalog-headers | tail -1)
