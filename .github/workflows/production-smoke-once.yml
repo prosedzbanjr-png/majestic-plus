@@ -20,7 +20,8 @@ jobs:
         run: |
           set -euo pipefail
           BASE='https://majestic-plus.vercel.app'
-          for attempt in {1..12}; do
+
+          for attempt in {1..18}; do
             status=$(curl -sS -o /tmp/catalog -w '%{http_code}' "$BASE/api/v1/fivem/catalog" || true)
             code=$(jq -r '.error.code // "none"' /tmp/catalog 2>/dev/null || true)
             echo "attempt=$attempt catalog_http=$status code=$code"
@@ -28,8 +29,9 @@ jobs:
               echo 'PRODUCTION_CATALOG_PASS'
               break
             fi
-            if [[ "$attempt" == "12" ]]; then
+            if [[ "$attempt" == "18" ]]; then
               echo 'PRODUCTION_CATALOG_FAIL'
+              cat /tmp/catalog || true
               exit 1
             fi
             sleep 5
@@ -55,4 +57,20 @@ jobs:
           test "$status" -ge 200
           test "$status" -lt 400
 
+          status=$(curl -sS -L -o /dev/null -w '%{http_code}' "$BASE/account")
+          echo "account_http=$status"
+          test "$status" -ge 200
+          test "$status" -lt 400
+
+          status=$(curl -sS -X POST -H 'Content-Type: application/json' -d '{}' -o /tmp/plans_unauth -w '%{http_code}' "$BASE/api/v1/fivem/subscription/plans")
+          echo "plans_unauth_http=$status"
+          test "$status" = "401"
+          jq -e '.ok == false and .version == "1" and .error.code == "UNAUTHORIZED"' /tmp/plans_unauth >/dev/null
+
+          status=$(curl -sS -X POST -H 'Content-Type: application/json' -d '{}' -o /tmp/resolve_unauth -w '%{http_code}' "$BASE/api/v1/fivem/account/resolve")
+          echo "resolve_unauth_http=$status"
+          test "$status" = "401"
+          jq -e '.ok == false and .version == "1" and .error.code == "UNAUTHORIZED"' /tmp/resolve_unauth >/dev/null
+
+          echo 'PRODUCTION_CONTROL_PLANE_AUTH_PASS'
           echo 'PRODUCTION_SMOKE_PASS'
