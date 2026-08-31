@@ -1,0 +1,40 @@
+name: Control Plane V1 CI
+
+on:
+  push:
+    branches: ["feat/fivem-control-plane-v1"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.13.0"
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - run: npm audit
+      - run: git diff --check origin/main...HEAD
+      - name: Verify Supabase schema files are unchanged
+        run: git diff --exit-code origin/main...HEAD -- supabase/
+      - name: Credential scan
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git grep -nE 'SUPABASE_SERVICE_ROLE_KEY=(eyJ|sb_secret_)|MAJESTIC_FIVEM_API_KEY=[A-Za-z0-9_-]{32,}|MAJESTIC_LINK_SECRET=[A-Za-z0-9_-]{32,}' -- ':!package-lock.json'; then
+            echo 'Potential committed credential detected.'
+            exit 1
+          fi
+          echo 'Credential scan passed.'

@@ -1,10 +1,12 @@
 import Link from "next/link";
 import AuthPanel from "./AuthPanel";
+import FiveMLinkPanel from "./FiveMLinkPanel";
 import LogoutButton from "./LogoutButton";
 import styles from "./account.module.css";
 import { getCurrentViewer, isViewerAuthConfigured, viewerDisplayName, viewerInitials, viewerUsername } from "@/lib/user-auth";
 import { getMyListIds, getViewerProfile } from "@/lib/viewer-data";
 import { getViewerSubscription, getViewerTransactions, getViewerWallet } from "@/lib/billing";
+import { getViewerFiveMLinkStatus } from "@/lib/fivem-control-plane/service";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +20,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
   let subscription = null;
   let wallet = null;
   let transactions = [] as Awaited<ReturnType<typeof getViewerTransactions>>;
+  let fiveM = { configured: false, linked: false, maskedPhone: null as string | null, realm: null as string | null };
 
   if (viewer) {
     try {
@@ -34,6 +37,11 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
       subscription = null;
       wallet = null;
       transactions = [];
+    }
+    try {
+      fiveM = await getViewerFiveMLinkStatus(viewer.id);
+    } catch {
+      fiveM = { configured: false, linked: false, maskedPhone: null, realm: null };
     }
   }
 
@@ -52,7 +60,7 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
         <div className={styles.hero}>
           <span className={styles.eyebrow}>MAJESTIC+ ACCOUNT</span>
           <h1>{viewer ? "Twoje konto" : "Wejdź do Majestic+"}</h1>
-          <p>{viewer ? "Profil, subskrypcja, transakcje i Twoja lista w jednym miejscu." : "Utwórz konto widza albo zaloguj się, żeby korzystać z Majestic+."}</p>
+          <p>{viewer ? "Profil, subskrypcja, FiveM, transakcje i Twoja lista w jednym miejscu." : "Utwórz konto widza albo zaloguj się, żeby korzystać z Majestic+."}</p>
         </div>
 
         {!isViewerAuthConfigured() ? (
@@ -93,9 +101,17 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
 
               <aside className={styles.aside}>
                 <div className={styles.asideBox}><h3>Majestic+ Membership</h3><p>{activeSubscription ? `Masz aktywny plan ${subscription?.plan?.name ?? "Majestic+"}. Player jest odblokowany.` : "Do oglądania produkcji potrzebujesz aktywnej subskrypcji."}</p></div>
-                <div className={styles.asideBox}><h3>Majestic Wallet</h3><p>Na razie to portfel IC Majestic+. Później ta sama płatność zostanie podpięta pod konto gracza i Wallet LB-Phone.</p></div>
+                <div className={styles.asideBox}><h3>Majestic Wallet</h3><p>To osobny portfel WWW. Zakupy wykonywane później z FiveM będą rozliczane przez ESX i nie będą obciążać tego salda.</p></div>
               </aside>
             </div>
+
+            <FiveMLinkPanel
+              configured={fiveM.configured}
+              linked={fiveM.linked}
+              maskedPhone={fiveM.maskedPhone}
+              realm={fiveM.realm}
+              username={username}
+            />
 
             <div className={styles.card} style={{ marginTop: 22 }}>
               <span className={styles.eyebrow}>HISTORIA PŁATNOŚCI</span>

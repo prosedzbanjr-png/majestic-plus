@@ -1,4 +1,5 @@
 import { supabaseBaseUrl, supabaseServiceKey } from "@/lib/majestic-db";
+import { isInternalPurchaseDescription } from "@/lib/fivem-control-plane/contract";
 
 export type SubscriptionPlan = {
   id: string;
@@ -126,9 +127,11 @@ export async function hasActiveSubscription(userId: string) {
 export async function getViewerTransactions(userId: string, limit = 25): Promise<ViewerTransaction[]> {
   if (!ready()) return [];
   const safeLimit = Math.max(1, Math.min(100, Number(limit) || 25));
-  return (await request(
-    `majestic_transactions?select=*&user_id=eq.${encodeURIComponent(userId)}&order=created_at.desc&limit=${safeLimit}`,
+  const fetchLimit = Math.min(100, Math.max(safeLimit, safeLimit * 2));
+  const rows = (await request(
+    `majestic_transactions?select=*&user_id=eq.${encodeURIComponent(userId)}&order=created_at.desc&limit=${fetchLimit}`,
   )) as ViewerTransaction[];
+  return rows.filter((transaction) => !isInternalPurchaseDescription(transaction.description)).slice(0, safeLimit);
 }
 
 export async function purchaseSubscription(userId: string, planCode: string) {
