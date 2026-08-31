@@ -23,6 +23,9 @@ jobs:
             {
               printf 'header = "x-vercel-protection-bypass: %s"\n' "$VERCEL_AUTOMATION_BYPASS_SECRET"
               printf 'header = "x-vercel-set-bypass-cookie: true"\n'
+              printf 'location\n'
+              printf 'cookie = "/tmp/vercel-cookies"\n'
+              printf 'cookie-jar = "/tmp/vercel-cookies"\n'
             } > "$HOME/.curlrc"
           fi
           BASE='https://majestic-plus-git-feat-fivem-catalog-phase2-asd-d8e6.vercel.app'
