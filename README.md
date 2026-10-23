@@ -21,7 +21,7 @@ npm test
 npm run build
 \`\`\`
 
-The project still uses Next.js 16.3.3, React 19.1.0, TypeScript, ESLint, and Vitest. Existing backend/API modules have not been removed as part of the homepage replacement. The pre-change state is preserved in the Git branch \`backup/pre-chatlog-magician-2026-10-23\`.
+The project still uses Next.js 16.3.3, React 19.1.0, TypeScript, ESLint, and Vitest. Existing backend/API modules have not been removed as part of the homepage replacement. The untouched pre-change code is preserved in the Git branch \`backup/majestic-plus-original-2026-10-23\`.
 
 ## Scope note
 
