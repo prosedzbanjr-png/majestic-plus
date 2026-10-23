@@ -156,6 +156,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 .cm-toast { position: fixed; z-index: 100; bottom: 22px; right: 22px; display: flex; align-items: center; gap: 20px; padding: 12px 14px; background: #d5f36a; color: #171b0f; border-radius: 6px; font-size: 11px; font-weight: 800; box-shadow: 0 12px 45px #0008; opacity: 0; transform: translateY(10px); pointer-events: none; transition: .2s ease; }
 .cm-toast.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
 .cm-toast button { border: 0; background: transparent; color: #30391e; font-size: 19px; cursor: pointer; padding: 0; }
+.cm-upload-note { margin: 9px 0 0; color: #75807a; font-size: 10px; line-height: 1.6; }
 .cm-hidden-canvas { display: none; }
 @media (max-width: 1120px) {
   .cm-topbar { gap: 18px; padding: 0 24px; }
