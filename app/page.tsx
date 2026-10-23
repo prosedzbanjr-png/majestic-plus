@@ -135,7 +135,7 @@ export default function Home() {
     try { await navigator.clipboard.writeText(displayLines.join("\n")); setStatus("Tekst skopiowany"); }
     catch { setStatus("Przeglądarka zablokowała kopiowanie"); }
   }
-  function downloadPng() {
+  async function downloadPng() {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const scale = 2;
@@ -150,36 +150,75 @@ export default function Home() {
       for (let i = 0; i < line.length; i += wrapLimit) chunks.push(line.slice(i, i + wrapLimit));
       return chunks;
     });
-    const height = Math.max(180, wrapped.length * linePx + pad * 2);
-    canvas.width = width * scale; canvas.height = height;
+
+    let photo: HTMLImageElement | null = null;
+    if (backgroundUrl) {
+      try {
+        photo = await new Promise<HTMLImageElement>((resolve, reject) => {
+          const image = new Image();
+          image.onload = () => resolve(image);
+          image.onerror = () => reject(new Error("Nie udało się wczytać zdjęcia"));
+          image.src = backgroundUrl;
+        });
+      } catch {
+        setStatus("Nie udało się wczytać zdjęcia. Wczytaj je ponownie.");
+        return;
+      }
+    }
+
+    const textHeight = Math.max(180, wrapped.length * linePx + pad * 2);
+    const photoHeight = photo ? width * (photo.naturalHeight / photo.naturalWidth) : 0;
+    const height = Math.max(textHeight, photoHeight || 0);
+    canvas.width = width * scale;
+    canvas.height = Math.ceil(height * scale);
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     ctx.scale(scale, scale);
-    if (background && backgroundUrl) {
-      ctx.fillStyle = "#08090b"; ctx.fillRect(0, 0, width, height);
+
+    if (photo) {
+      const ratio = Math.max(width / photo.naturalWidth, height / photo.naturalHeight);
+      const drawWidth = photo.naturalWidth * ratio;
+      const drawHeight = photo.naturalHeight * ratio;
+      ctx.drawImage(photo, (width - drawWidth) / 2, (height - drawHeight) / 2, drawWidth, drawHeight);
+      if (background) {
+        ctx.fillStyle = "rgba(0,0,0,.42)";
+        ctx.fillRect(0, 0, width, height);
+      }
     } else if (background) {
-      ctx.fillStyle = "rgba(0,0,0,.72)"; ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = "rgba(0,0,0,.72)";
+      ctx.fillRect(0, 0, width, height);
     } else {
       ctx.clearRect(0, 0, width, height);
     }
+
     ctx.font = fontPx + "px " + font;
     ctx.textBaseline = "top";
     let y = pad;
     for (const line of wrapped) {
       const color = lineColor(line);
-      ctx.fillStyle = contrast ? "rgba(0,0,0,.72)" : "transparent";
-      if (contrast) ctx.fillRect(pad - 6, y - 2, width - pad * 2 + 12, linePx);
-      ctx.fillStyle = opsec ? "#e8e8e8" : color;
-      ctx.shadowColor = contrast ? "#000" : "transparent"; ctx.shadowBlur = contrast ? 3 : 0;
+      if (contrast) {
+        ctx.fillStyle = "rgba(0,0,0,.72)";
+        ctx.fillRect(pad - 6, y - 2, width - pad * 2 + 12, linePx);
+      }
+      const speaker = getSpeaker(line);
+      const isMine = Boolean(myName.trim()) && speaker.toLocaleLowerCase() === myName.trim().toLocaleLowerCase();
+      ctx.fillStyle = opsec ? "#e8e8e8" : isMine ? "#f4c95d" : namesOn ? color : "#e8e8e8";
+      ctx.shadowColor = contrast ? "#000" : "transparent";
+      ctx.shadowBlur = contrast ? 3 : 0;
       const text = line.replace(/!\{#?[0-9a-f]{6}\}/gi, "").replace(/÷([^÷]*)÷/g, "••••••");
       ctx.fillText(text, pad, y, width - pad * 2);
       y += linePx;
     }
+
     canvas.toBlob((blob) => {
       if (!blob) { setStatus("Nie udało się utworzyć obrazu"); return; }
       const url = URL.createObjectURL(blob);
-      const link = document.createElement("a"); link.href = url; link.download = "chatlog-magician-pl.png"; link.click();
-      URL.revokeObjectURL(url); setStatus("Pobrano PNG");
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "chatlog-magician-pl.png";
+      link.click();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setStatus("Pobrano PNG");
     }, "image/png");
   }
 
@@ -248,8 +287,9 @@ export default function Home() {
             <div className="cm-panel-title"><span className="cm-step">04</span><div><h2>Eksport</h2><p>Przygotuj gotowy obraz</p></div></div>
             <div className="cm-field"><label htmlFor="canvas-size">Szerokość obrazu</label><select className="cm-input" id="canvas-size" value={canvasSize} onChange={(e) => setCanvasSize(e.target.value)}><option value="720">720 px · kompaktowy</option><option value="1080">1080 px · standard</option><option value="1440">1440 px · wysoka jakość</option><option value="1920">1920 px · szeroki</option></select></div>
             <div className="cm-button-row"><button className="cm-button cm-button-primary" onClick={downloadPng}>↓ Pobierz PNG</button><button className="cm-button cm-button-secondary" onClick={copyText}>Kopiuj tekst</button></div>
-            <label className="cm-button cm-button-secondary cm-full">Dodaj obraz tła<input ref={imageInputRef} type="file" accept="image/*" onChange={loadBackground} hidden /></label>
-            {backgroundUrl && <button className="cm-text-button" onClick={() => { URL.revokeObjectURL(backgroundUrl); setBackgroundUrl(""); }}>Usuń obraz tła</button>}
+            <label className="cm-button cm-button-secondary cm-full">↑ Wgraj zdjęcie z komputera<input ref={imageInputRef} type="file" accept="image/png,image/jpeg,image/webp,image/bmp,image/gif" onChange={loadBackground} hidden /></label>
+            <p className="cm-upload-note">PNG, JPG, WEBP lub BMP. Zdjęcie zostaje w Twojej przeglądarce i będzie widoczne także w pobranym PNG.</p>
+            {backgroundUrl && <button className="cm-text-button" onClick={() => { URL.revokeObjectURL(backgroundUrl); setBackgroundUrl(""); setStatus("Usunięto zdjęcie"); }}>Usuń zdjęcie</button>}
           </section>
         </aside>
 
